@@ -136,6 +136,9 @@ func PromoteUser(c *fiber.Ctx) error {
 		)
 	}
 
+	user.Role = user.Role + 1
+	config.Database.Where("id = ?", user.ID).Updates(userToPromote)
+
 	return c.Status(200).JSON(
 		entities.Message{
 			Message: "ok",
