@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"mime/multipart"
+	"strconv"
 	"strings"
 
 	"github.com/efydb/config"
@@ -92,4 +93,16 @@ func SaveFile(c *fiber.Ctx, file *multipart.FileHeader) (string, error) {
 	url := c.BaseURL() + fmt.Sprintf("/files/%s", fullName)
 
 	return url, nil
+}
+
+func ParseUintParam(c *fiber.Ctx, key string) (uint, error) {
+	query := c.Query("id")
+	if query == "" {
+		return 0, errors.New("No Id specified!")
+	}
+	id, err := strconv.ParseUint(query, 10, 32)
+	if err != nil {
+		return 0, err
+	}
+	return uint(id), nil
 }

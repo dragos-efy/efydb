@@ -78,3 +78,44 @@ func CreateTheme(c *fiber.Ctx) error {
 
 	return c.Status(fiber.StatusCreated).JSON(theme)
 }
+
+func ApproveTheme(c *fiber.Ctx) error {
+	user, err := ValidateUser(c)
+	if err != nil {
+		return nil
+	}
+	if user.Role == 0 {
+		return ErrorResponse(c, fiber.StatusForbidden, "No permissions!")
+	}
+	id, err := ParseUintParam(c, "id")
+	if err != nil {
+		return ErrorResponse(c, fiber.StatusBadRequest, err.Error())
+	}
+
+	config.Database.Model(&entities.Theme{}).Where("id = ?", uint(id)).Update("approved", true)
+	return OkResponse(c)
+}
+
+func DeleteTheme(c *fiber.Ctx) error {
+	user, err := ValidateUser(c)
+	if err != nil {
+		return nil
+	}
+	id, err := ParseUintParam(c, "id")
+	if err != nil {
+		return ErrorResponse(c, fiber.StatusBadRequest, err.Error())
+	}
+
+	var theme entities.Theme
+	config.Database.Find(&theme, "id = ?", id)
+	if isBlank(theme.Username) {
+		return ErrorResponse(c, fiber.StatusBadRequest, "Theme not found!")
+	}
+
+	if user.Name != theme.Username && user.Role == 0 {
+		return ErrorResponse(c, fiber.StatusForbidden, "No permissions to delete the theme!")
+	}
+
+	config.Database.Delete(&theme)
+	return OkResponse(c)
+}
