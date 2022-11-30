@@ -3,6 +3,7 @@ package handlers
 import (
 	"encoding/json"
 	"strings"
+	"time"
 
 	"github.com/efydb/config"
 	"github.com/efydb/entities"
@@ -10,8 +11,16 @@ import (
 )
 
 func GetThemes(c *fiber.Ctx) error {
+	showUnapproved := c.Query("showUnapproved", "false")
+
 	var themes []entities.Theme
-	config.Database.Find(&themes)
+
+	if showUnapproved == "true" {
+		config.Database.Find(&themes)
+	} else {
+		config.Database.Where("approved = ?", true).Find(&themes)
+	}
+
 	return c.JSON(&themes)
 }
 
@@ -63,6 +72,9 @@ func CreateTheme(c *fiber.Ctx) error {
 	// set approved false by default
 	theme.Approved = false
 	theme.Username = user.Name
+	theme.Uploaded = time.Now().Unix()
+
+	config.Database.Create(&theme)
 
 	return c.Status(fiber.StatusCreated).JSON(theme)
 }

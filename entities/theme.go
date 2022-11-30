@@ -10,7 +10,7 @@ type Theme struct {
 	Username    string `json:"username"`
 	Config      string `json:"config"`
 	Screenshot  string `json:"screenshot"`
-	Uploaded    uint   `json:"uploaded"`
+	Uploaded    int64  `json:"uploaded"`
 	EfyVersion  uint   `json:"efy_version"`
 	Likes       uint   `json:"likes"`
 	Approved    bool   `json:"approved"`
