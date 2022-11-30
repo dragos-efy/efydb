@@ -7,6 +7,7 @@ type Theme struct {
 	Title       string `json:"title"`
 	Description string `json:"description"`
 	Tags        string `json:"tags"`
+	Username    string `json:"username"`
 	Config      string `json:"config"`
 	Screenshot  string `json:"screenshot"`
 	Uploaded    uint   `json:"uploaded"`

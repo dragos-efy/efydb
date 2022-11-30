@@ -3,12 +3,16 @@ package handlers
 import (
 	"crypto/rand"
 	"encoding/hex"
+	"fmt"
+	"mime/multipart"
 	"strings"
 
 	"github.com/efydb/config"
 	"github.com/efydb/entities"
 	"github.com/gofiber/fiber/v2"
 	"golang.org/x/crypto/bcrypt"
+
+	"github.com/google/uuid"
 )
 
 func HashPassword(password string) (string, error) {
@@ -64,4 +68,25 @@ func OkResponse(c *fiber.Ctx) error {
 			Message: "ok",
 		},
 	)
+}
+
+func SaveFile(c *fiber.Ctx, file *multipart.FileHeader) (string, error) {
+	// create a unique name for the screenshot
+	uniqueId := uuid.New()
+
+	// generate a unique file name and extract the file extension
+	filename := strings.Replace(uniqueId.String(), "-", "", -1)
+	fileExt := strings.Split(file.Filename, ".")[1]
+
+	fullName := fmt.Sprintf("%s.%s", filename, fileExt)
+
+	err := c.SaveFile(file, fmt.Sprintf("./files/%s", fullName))
+
+	if err != nil {
+		return "", err
+	}
+
+	url := c.BaseURL() + fmt.Sprintf("/files/%s", fullName)
+
+	return url, nil
 }

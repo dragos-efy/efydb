@@ -19,13 +19,18 @@ func CreateRouter() {
 		return handlers.OkResponse(c)
 	})
 
-	user := router.Group("/users")
+	router.Static("/files", "./files")
 
+	user := router.Group("/users")
 	user.Get("/", handlers.GetUsers)
 	user.Post("/register", handlers.CreateUser)
 	user.Post("/login", handlers.LoginUser)
 	user.Post("/promote", handlers.PromoteUser)
 	user.Delete("/delete", handlers.DeleteUser)
+
+	themes := router.Group("/themes")
+	themes.Get("/", handlers.GetThemes)
+	themes.Post("/create", handlers.CreateTheme)
 
 	log.Fatal(router.Listen(":8000"))
 }
