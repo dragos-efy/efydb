@@ -31,6 +31,8 @@ func CreateRouter() {
 	themes := router.Group("/themes")
 	themes.Get("/", handlers.GetThemes)
 	themes.Post("/create", handlers.CreateTheme)
+	themes.Delete("/delete", handlers.DeleteTheme)
+	themes.Post("/approve", handlers.ApproveTheme)
 
 	log.Fatal(router.Listen(":8000"))
 }
