@@ -3,6 +3,7 @@ package handlers
 import (
 	"crypto/rand"
 	"encoding/hex"
+	"errors"
 	"fmt"
 	"mime/multipart"
 	"strings"
@@ -38,17 +39,19 @@ func isBlank(text string) bool {
 }
 
 func ValidateUser(c *fiber.Ctx) (entities.User, error) {
-	token := c.GetReqHeaders()["Authorization"]
 	var user entities.User
+	token := c.GetReqHeaders()["Authorization"]
+
+	if isBlank(token) {
+		ErrorResponse(c, fiber.StatusBadRequest, "Token can't be empty!")
+		return user, errors.New("Token can't be empty!")
+	}
+
 	query := config.Database.Find(&user, &entities.User{
 		Token: token,
 	})
 	if query.Error != nil {
-		c.Status(fiber.StatusBadRequest).JSON(
-			entities.Message{
-				Message: "Invalid Access Token!",
-			},
-		)
+		ErrorResponse(c, fiber.StatusBadRequest, "Invalid Access Token!")
 	}
 
 	return user, query.Error

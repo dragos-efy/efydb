@@ -19,7 +19,7 @@ func CreateTheme(c *fiber.Ctx) error {
 	// get the user
 	user, err := ValidateUser(c)
 	if err != nil {
-		return ErrorResponse(c, fiber.StatusForbidden, "Invalid user!")
+		return nil
 	}
 
 	// get the uploaded screenshot
