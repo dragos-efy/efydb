@@ -25,6 +25,7 @@ func CreateRouter() {
 	user.Get("/", handlers.GetUsers)
 	user.Post("/register", handlers.CreateUser)
 	user.Post("/login", handlers.LoginUser)
+	user.Patch("/update", handlers.UpdateUser)
 	user.Post("/promote", handlers.PromoteUser)
 	user.Delete("/delete", handlers.DeleteUser)
 

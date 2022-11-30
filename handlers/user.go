@@ -116,3 +116,27 @@ func PromoteUser(c *fiber.Ctx) error {
 
 	return OkResponse(c)
 }
+
+func UpdateUser(c *fiber.Ctx) error {
+	user, err := ValidateUser(c)
+	if err != nil {
+		return nil
+	}
+
+	updatedUser := new(entities.User)
+	if err := c.BodyParser(updatedUser); err != nil {
+		return ErrorResponse(c, fiber.StatusBadRequest, err.Error())
+	}
+
+	if !isBlank(updatedUser.Password) {
+		user.Password, _ = HashPassword(updatedUser.Password)
+	}
+
+	if !isBlank(updatedUser.Bio) {
+		user.Bio = updatedUser.Bio
+	}
+
+	config.Database.Updates(&user)
+
+	return OkResponse(c)
+}
