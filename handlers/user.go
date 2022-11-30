@@ -10,27 +10,15 @@ func CreateUser(c *fiber.Ctx) error {
 	user := new(entities.User)
 
 	if err := c.BodyParser(user); err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(
-			fiber.Map{
-				"message": err.Error(),
-			},
-		)
+		return ErrorResponse(c, fiber.StatusBadRequest, err.Error())
 	}
 
 	if isBlank(user.Name) || isBlank(user.Password) {
-		return c.Status(fiber.StatusBadRequest).JSON(
-			entities.Message{
-				Message: "Username and Password can't be empty!",
-			},
-		)
+		return ErrorResponse(c, fiber.StatusBadRequest, "Username and Password can't be empty!")
 	}
 
 	if len(user.Password) < 8 {
-		return c.Status(fiber.StatusBadRequest).JSON(
-			entities.Message{
-				Message: "Password must be 8 chars at minimum!",
-			},
-		)
+		return ErrorResponse(c, fiber.StatusBadRequest, "Password must be 8 chars at minimum!")
 	}
 
 	var nameTaken bool
@@ -40,11 +28,7 @@ func CreateUser(c *fiber.Ctx) error {
 		Find(&nameTaken)
 
 	if nameTaken {
-		return c.Status(fiber.StatusForbidden).JSON(
-			entities.Message{
-				Message: "Username already taken!",
-			},
-		)
+		return ErrorResponse(c, fiber.StatusForbidden, "Username already taken!")
 	}
 
 	user.Password, _ = HashPassword(user.Password)
@@ -80,22 +64,14 @@ func DeleteUser(c *fiber.Ctx) error {
 	token := c.GetReqHeaders()["Authorization"]
 	query := config.Database.Delete(&entities.User{}, "token = ?", token)
 	if query.RowsAffected == 0 {
-		return c.Status(fiber.StatusBadRequest).JSON(
-			entities.Message{
-				Message: "Invalid access token!",
-			},
-		)
+		return ErrorResponse(c, fiber.StatusBadRequest, "Invalid Access Token!")
 	}
-	return c.JSON(
-		entities.Message{
-			Message: "ok",
-		},
-	)
+	return OkResponse(c)
 }
 
 func LoginUser(c *fiber.Ctx) error {
-	user, err := ValidateUser(c)
-	if err != nil {
+	user := new(entities.User)
+	if err := c.BodyParser(user); err != nil {
 		return err
 	}
 
@@ -111,37 +87,21 @@ func PromoteUser(c *fiber.Ctx) error {
 	}
 
 	if user.Role == 0 {
-		return c.Status(fiber.StatusForbidden).JSON(
-			entities.Message{
-				Message: "No permissions for promoting!",
-			},
-		)
+		return ErrorResponse(c, fiber.StatusForbidden, "No permissions for promoting!")
 	}
 
 	userToPromote := new(entities.User)
 	if err := c.BodyParser(userToPromote); err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(
-			entities.Message{
-				Message: err.Error(),
-			},
-		)
+		return ErrorResponse(c, fiber.StatusBadRequest, err.Error())
 	}
 
 	query := config.Database.Find(&user, user)
 	if query.Error != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(
-			entities.Message{
-				Message: err.Error(),
-			},
-		)
+		return ErrorResponse(c, fiber.StatusBadRequest, err.Error())
 	}
 
 	user.Role = user.Role + 1
 	config.Database.Where("id = ?", user.ID).Updates(userToPromote)
 
-	return c.Status(200).JSON(
-		entities.Message{
-			Message: "ok",
-		},
-	)
+	return OkResponse(c)
 }

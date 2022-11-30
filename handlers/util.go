@@ -49,3 +49,19 @@ func ValidateUser(c *fiber.Ctx) (entities.User, error) {
 
 	return user, query.Error
 }
+
+func ErrorResponse(c *fiber.Ctx, status int, error string) error {
+	return c.Status(status).JSON(
+		entities.Message{
+			Message: error,
+		},
+	)
+}
+
+func OkResponse(c *fiber.Ctx) error {
+	return c.Status(200).JSON(
+		entities.Message{
+			Message: "ok",
+		},
+	)
+}
