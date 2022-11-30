@@ -70,9 +70,20 @@ func DeleteUser(c *fiber.Ctx) error {
 }
 
 func LoginUser(c *fiber.Ctx) error {
-	user := new(entities.User)
-	if err := c.BodyParser(user); err != nil {
-		return err
+	userReq := new(entities.User)
+	if err := c.BodyParser(userReq); err != nil {
+		return ErrorResponse(c, fiber.StatusBadRequest, err.Error())
+	}
+
+	var user entities.User
+	err := config.Database.Find(&user, "name = ?", userReq.Name).Error
+
+	if err != nil {
+		return ErrorResponse(c, fiber.StatusBadRequest, err.Error())
+	}
+
+	if !CheckPasswordHash(userReq.Password, user.Password) {
+		return ErrorResponse(c, fiber.StatusForbidden, "Password doesn't match!")
 	}
 
 	user.Password = ""
