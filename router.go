@@ -15,11 +15,17 @@ func CreateRouter() {
 		AllowHeaders: "Origin, Content-Type, Accept, Authorization",
 	}))
 
-	router.Post("/user/register", handlers.CreateUser)
-	router.Post("/user/login", handlers.LoginUser)
-	router.Post("/user/promote", handlers.PromoteUser)
-	router.Delete("/user/delete", handlers.DeleteUser)
-	router.Get("/users", handlers.GetUsers)
+	router.Get("/", func(c *fiber.Ctx) error {
+		return handlers.OkResponse(c)
+	})
+
+	user := router.Group("/users")
+
+	user.Get("/", handlers.GetUsers)
+	user.Post("/register", handlers.CreateUser)
+	user.Post("/login", handlers.LoginUser)
+	user.Post("/promote", handlers.PromoteUser)
+	user.Delete("/delete", handlers.DeleteUser)
 
 	log.Fatal(router.Listen(":8000"))
 }
