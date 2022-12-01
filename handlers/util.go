@@ -41,7 +41,7 @@ func isBlank(text string) bool {
 
 func ValidateUser(c *fiber.Ctx) (entities.User, error) {
 	var user entities.User
-	token := c.GetReqHeaders()["Authorization"]
+	token := c.Get("Authorization")
 
 	if isBlank(token) {
 		ErrorResponse(c, fiber.StatusBadRequest, "Token can't be empty!")

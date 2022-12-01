@@ -61,7 +61,7 @@ func getAllUsers() []entities.User {
 }
 
 func DeleteUser(c *fiber.Ctx) error {
-	token := c.GetReqHeaders()["Authorization"]
+	token := c.Get("Authorization")
 	query := config.Database.Delete(&entities.User{}, "token = ?", token)
 	if query.RowsAffected == 0 {
 		return ErrorResponse(c, fiber.StatusBadRequest, "Invalid Access Token!")
