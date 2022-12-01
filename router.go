@@ -4,12 +4,19 @@ import (
 	"log"
 
 	"github.com/efydb/handlers"
+	"github.com/goccy/go-json"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 )
 
 func CreateRouter() {
-	router := fiber.New()
+	router := fiber.New(
+		fiber.Config{
+			BodyLimit:   20 * 1024 * 1024,
+			JSONEncoder: json.Marshal,
+			JSONDecoder: json.Unmarshal,
+		},
+	)
 
 	router.Use(cors.New(cors.Config{
 		AllowHeaders: "Origin, Content-Type, Accept, Authorization",

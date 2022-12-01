@@ -1,12 +1,13 @@
 package handlers
 
 import (
-	"encoding/json"
 	"strings"
 	"time"
 
 	"github.com/efydb/config"
 	"github.com/efydb/entities"
+
+	"github.com/goccy/go-json"
 	"github.com/gofiber/fiber/v2"
 )
 
