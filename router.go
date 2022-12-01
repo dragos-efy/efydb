@@ -42,5 +42,5 @@ func CreateRouter() {
 	themes.Delete("/delete", handlers.DeleteTheme)
 	themes.Post("/approve", handlers.ApproveTheme)
 
-	log.Fatal(router.Listen(":8000"))
+	log.Fatal(router.Listen(":8001"))
 }
