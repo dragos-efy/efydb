@@ -69,6 +69,14 @@ func CreateTheme(c *fiber.Ctx) error {
 		return ErrorResponse(c, fiber.StatusInternalServerError, err.Error())
 	}
 
+	themeConf, err := c.FormFile("themeConfig")
+	if err == nil {
+		theme.ThemesConfig, err = SaveFile(c, themeConf)
+		if err != nil {
+			return ErrorResponse(c, fiber.StatusInternalServerError, err.Error())
+		}
+	}
+
 	// set approved false by default
 	theme.Approved = false
 	theme.Username = user.Name
