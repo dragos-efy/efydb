@@ -1,9 +1,12 @@
 <section>
     {#if !loaded}
     <div class="spin"></div>
-    {:else if token}
+    {:else if userInfo}
     <div>
-        {userInfo?.name}
+        <h2>{userInfo.name}</h2>
+        <p>{userInfo.bio}</p>
+        <button on:click={logout}>Logout</button>
+        <button on:click={deleteAccount}>Delete Account</button>
     </div>
     {:else}
     <div id="signUp">
@@ -20,11 +23,10 @@
 
 <script type="ts">
 	import fetchJson from "$lib/fetchjs";
-	import { getToken, setToken } from "$lib/token";
+	import { getToken, setToken, clearToken } from "$lib/token";
 	import { onMount } from "svelte";
 
     let loaded = false;
-    let token: string | null;
     let userInfo: any;
 
     let username: string;
@@ -32,12 +34,23 @@
     let bio: string;
 
     onMount(async () => {
-        token = getToken();
+        let token = getToken();
         if (token) {
             userInfo = await fetchJson("/users/account", {});
         }
         loaded = true;
     })
+
+    const getReqJson = () => {
+        return {
+            method: "POST",
+            body: JSON.stringify({
+                name: username,
+                password: password,
+                bio: bio,
+            })
+        }
+    }
 
     const signUp = async () => {
         if (!password || !username) {
@@ -45,23 +58,15 @@
             return
         }
 
-        const response = await fetchJson("/users/register", {
-            method: "POST",
-            body: JSON.stringify({
-                name: username,
-                password: password,
-                bio: bio,
-            })
-        })
+        const response = await fetchJson("/users/register", getReqJson())
 
         if (response.message) {
             alert(response.message);
             return;
         }
 
+        userInfo = response;
         setToken(response.token);
-        token = response.token;
-        console.log(response);
     }
 
     const signIn = async () => {
@@ -70,19 +75,27 @@
             return
         }
 
-        const response = await fetchJson("/users/login", {
-            method: "POST"
-        })
+        const response = await fetchJson("/users/login", getReqJson())
 
         if (response.message) {
             alert(response.message);
             return;
         }
 
+        userInfo = response;
         setToken(response.token);
-        token = response.token;
-        userInfo = response.
-        console.log(response);
+    }
+
+    const logout = () => {
+        userInfo = null,
+        clearToken();
+    }
+
+    const deleteAccount = async () => {
+        await fetchJson("/users/delete", {
+            method: "DELETE"
+        });
+        logout();
     }
 </script>
 

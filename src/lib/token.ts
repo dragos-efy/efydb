@@ -18,3 +18,11 @@ export const setToken = (token: string) => {
         console.error(error);
     }
 }
+
+export const clearToken = () => {
+    try {
+        localStorage.removeItem(KEY);
+    } catch (error) {
+        console.error(error);
+    }
+}
