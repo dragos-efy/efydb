@@ -92,7 +92,7 @@ func CreateTheme(c *fiber.Ctx) error {
 
 	themeConf, err := c.FormFile("themeConfig")
 	if err == nil {
-		theme.ThemesConfig, err = SaveFile(c, themeConf)
+		theme.ImageConfig, err = SaveFile(c, themeConf)
 		if err != nil {
 			return ErrorResponse(c, fiber.StatusInternalServerError, err.Error())
 		}
@@ -152,11 +152,14 @@ func DeleteTheme(c *fiber.Ctx) error {
 
 func rewriteTheme(theme *entities.Theme, baseUrl string) {
 	theme.Config = rewriteURL(baseUrl, theme.Config)
-	theme.ThemesConfig = rewriteURL(baseUrl, theme.ThemesConfig)
+	theme.ImageConfig = rewriteURL(baseUrl, theme.ImageConfig)
 	theme.Screenshot = rewriteURL(baseUrl, theme.Screenshot)
 }
 
 func rewriteURL(baseUrl string, path string) string {
 	urlPath, _ := url.Parse(path)
+	if path == "" {
+		return ""
+	}
 	return baseUrl + urlPath.Path
 }
