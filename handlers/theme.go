@@ -90,7 +90,7 @@ func CreateTheme(c *fiber.Ctx) error {
 		return ErrorResponse(c, fiber.StatusInternalServerError, err.Error())
 	}
 
-	themeConf, err := c.FormFile("themeConfig")
+	themeConf, err := c.FormFile("imageConfig")
 	if err == nil {
 		theme.ImageConfig, err = SaveFile(c, themeConf)
 		if err != nil {
