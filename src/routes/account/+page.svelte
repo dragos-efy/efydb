@@ -30,7 +30,7 @@
 
     onMount(async () => {
         if (token) {
-            userInfo = await fetchJson("/users/account", {})
+            userInfo = await fetchJson("/users/account", {});
         }
     })
 
@@ -48,6 +48,12 @@
                 bio: bio,
             })
         })
+
+        if (response.message) {
+            alert(response.message);
+            return;
+        }
+
         setToken(response.token);
         token = response.token;
         console.log(response);
@@ -62,8 +68,15 @@
         const response = await fetchJson("/users/login", {
             method: "POST"
         })
+
+        if (response.message) {
+            alert(response.message);
+            return;
+        }
+
         setToken(response.token);
         token = response.token;
+        userInfo = response.
         console.log(response);
     }
 </script>
