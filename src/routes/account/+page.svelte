@@ -2,11 +2,14 @@
     {#if !loaded}
     <div class="spin"></div>
     {:else if userInfo}
-    <div>
+    <div id="user-actions">
+        <img src="/avatar.svg" alt="Avatar">
         <h2>{userInfo.name}</h2>
         <p>{userInfo.bio}</p>
-        <button on:click={logout}>Logout</button>
-        <button on:click={deleteAccount}>Delete Account</button>
+        <div class="user-buttons">
+            <button on:click={logout}>Logout</button>
+            <button on:click={deleteAccount}>Delete Account</button>
+        </div>
     </div>
     {:else}
     <div id="signUp">
@@ -14,7 +17,7 @@
         <input type="text" bind:value={username} placeholder="Username">
         <input type="password" bind:value={password} placeholder="Password">
         <input type="text" bind:value={bio} placeholder="Bio">
-        <div id="sign-buttons">
+        <div class="sign-buttons">
             <button on:click={signIn}>Sign In</button>
             <button on:click={signUp}>Sign Up</button>
         </div>
@@ -101,12 +104,31 @@
 </script>
 
 <style>
-    #sign-buttons {
+    #user-actions {
+        min-width: 30vw;
+        min-height: 50vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+
+    #user-actions>div {
+        margin-top: 30rem;
+    }
+
+    #user-actions img {
+        height: 180rem;
+        width: auto;
+        margin-bottom: 20rem;
+    }
+
+    .sign-buttons {
         display: flex;
         justify-content: end;
     }
 
-    #sign-buttons button:last-child {
+    .sign-buttons button:last-child {
         margin-left: 10rem;
     }
 </style>

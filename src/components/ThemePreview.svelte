@@ -9,7 +9,7 @@
     export let theme: any;
 
     const onClick = () => {
-        
+        window.location.href = "/theme?id=" + theme.ID;
     }
 </script>
 
