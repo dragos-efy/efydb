@@ -1,7 +1,9 @@
-<h1>Welcome to EfyDb</h1>
-<p>Visit <a href="https://efy.ooo">efy.ooo</a> to read the documentation</p>
+<Header />
 <slot />
+<Footer />
 <script>
+	import Footer from "../components/Footer.svelte";
+	import Header from "../components/Header.svelte";
     import { onMount } from "svelte";
     onMount(() => {
         import ("../../efy/efy.js");

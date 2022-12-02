@@ -21,6 +21,10 @@
         margin: var(--efy_padding);
     }
 
+    .theme:hover {
+        cursor: pointer;
+    }
+
     .theme img {
         aspect-ratio: 16 / 9;
     }
