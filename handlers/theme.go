@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"net/url"
 	"strings"
 	"time"
 
@@ -20,6 +21,10 @@ func GetThemes(c *fiber.Ctx) error {
 		config.Database.Find(&themes)
 	} else {
 		config.Database.Where("approved = ?", true).Find(&themes)
+	}
+
+	for index := range themes {
+		rewriteTheme(&themes[index], c.BaseURL())
 	}
 
 	return c.JSON(&themes)
@@ -85,6 +90,7 @@ func CreateTheme(c *fiber.Ctx) error {
 
 	config.Database.Create(&theme)
 
+	rewriteTheme(&theme, c.BaseURL())
 	return c.Status(fiber.StatusCreated).JSON(theme)
 }
 
@@ -127,4 +133,15 @@ func DeleteTheme(c *fiber.Ctx) error {
 
 	config.Database.Delete(&theme)
 	return OkResponse(c)
+}
+
+func rewriteTheme(theme *entities.Theme, baseUrl string) {
+	theme.Config = rewriteURL(baseUrl, theme.Config)
+	theme.ThemesConfig = rewriteURL(baseUrl, theme.ThemesConfig)
+	theme.Screenshot = rewriteURL(baseUrl, theme.Screenshot)
+}
+
+func rewriteURL(baseUrl string, path string) string {
+	urlPath, _ := url.Parse(path)
+	return baseUrl + urlPath.Path
 }

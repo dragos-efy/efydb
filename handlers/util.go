@@ -90,9 +90,7 @@ func SaveFile(c *fiber.Ctx, file *multipart.FileHeader) (string, error) {
 		return "", err
 	}
 
-	url := c.BaseURL() + fmt.Sprintf("/files/%s", fullName)
-
-	return url, nil
+	return fmt.Sprintf("/files/%s", fullName), nil
 }
 
 func ParseUintParam(c *fiber.Ctx, key string) (uint, error) {
