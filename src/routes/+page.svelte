@@ -1,13 +1,17 @@
 <section>
+{#if themes}
 {#each themes as theme}
     <ThemePreview theme={theme} />
 {/each}
+{:else}
+<div class="spin"></div>
+{/if}
 </section>
 <script type="ts">
 	import ThemePreview from "../components/ThemePreview.svelte";
 	import fetchJson from "../lib/fetchjs";
 
-    let themes: any[] = [];
+    let themes: any[];
 
     const fetchThemes = async () => {
         themes = await fetchJson("/themes?showUnapproved=true", {});
