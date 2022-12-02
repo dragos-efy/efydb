@@ -140,3 +140,11 @@ func UpdateUser(c *fiber.Ctx) error {
 
 	return OkResponse(c)
 }
+
+func GetUser(c *fiber.Ctx) error {
+	user, err := ValidateUser(c)
+	if err != nil {
+		return nil
+	}
+	return c.JSON(user)
+}
