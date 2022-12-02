@@ -1,5 +1,12 @@
-<script>
+<script lang="ts">
 	import { getToken } from "$lib/token";
+	import { onMount } from "svelte";
+
+    let token: string | null;
+
+    onMount(() => {
+        token = getToken();
+    })
 </script>
 
 <header>
@@ -8,7 +15,7 @@
         <ul>
             <li><a href="/">Themes</a></li>
             <li><a href="/account">Account</a></li>
-            {#if getToken()}
+            {#if token}
             <li><a href="/new">New</a></li>
             {/if}
         </ul>

@@ -11,7 +11,6 @@
 
     const fetchThemes = async () => {
         themes = await fetchJson("/themes?showUnapproved=true", {});
-        console.log(themes)
     }
 
     fetchThemes();

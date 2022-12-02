@@ -1,8 +1,10 @@
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <div class="theme" on:click={onClick}>
     <img src={theme.screenshot} alt={theme.name}>
-    <h4>{theme.title}</h4>
-    <h5>{theme.username}</h5>
+    <span class="theme-info">
+        <h4>{theme.title}</h4>
+        <h6>{theme.username}</h6>
+    </span>
 </div>
 
 <script lang="ts">
@@ -27,5 +29,10 @@
 
     .theme img {
         aspect-ratio: 16 / 9;
+    }
+
+    h6 {
+        opacity: 0.7;
+        margin-top: -7rem;
     }
 </style>
