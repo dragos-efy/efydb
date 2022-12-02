@@ -7,7 +7,7 @@ const fetchJson = async (path: string, options: any) => {
         ...options,
         headers: {
             "Authorization": getToken(),
-            "Content-Type": "application/json",
+            ...options.headers
         }
     });
     return await response.json();
