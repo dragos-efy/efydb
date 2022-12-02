@@ -7,7 +7,17 @@ const fetchJson = async (path: string, options: any) => {
         ...options,
         headers: {
             "Authorization": getToken(),
-            ...options.headers
+            "Content-Type": "application/json",
+        }
+    });
+    return await response.json();
+}
+
+export const fetchFormJson = async (path: string, options: any) => {
+    let response = await fetch(new URL(path, BASE_URL), {
+        ...options,
+        headers: {
+            "Authorization": getToken(),
         }
     });
     return await response.json();

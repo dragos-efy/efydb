@@ -16,7 +16,7 @@
 </section>
 
 <script lang="ts">
-	import fetchJson from "$lib/fetchjs";
+	import { fetchFormJson }from "$lib/fetchjs";
 
     let title: string;
     let description: string;
@@ -39,7 +39,7 @@
         formData.append("config", config.files[0]);
         if (themeConfig.files.length > 0) formData.append("themeConfig", themeConfig.files[0]);
 
-        await fetchJson("/themes/create", {
+        await fetchFormJson("/themes/create", {
             method: "POST",
             body: formData,
         })
