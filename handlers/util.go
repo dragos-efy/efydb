@@ -93,12 +93,24 @@ func SaveFile(c *fiber.Ctx, file *multipart.FileHeader) (string, error) {
 	return fmt.Sprintf("/files/%s", fullName), nil
 }
 
-func ParseUintParam(c *fiber.Ctx, key string) (uint, error) {
-	query := c.Query("id")
+func ParseUintQuery(c *fiber.Ctx, key string) (uint, error) {
+	query := c.Query(key)
 	if query == "" {
-		return 0, errors.New("No Id specified!")
+		return 0, errors.New(fmt.Sprintf("No %s specified", key))
 	}
 	id, err := strconv.ParseUint(query, 10, 32)
+	if err != nil {
+		return 0, err
+	}
+	return uint(id), nil
+}
+
+func ParseUintParam(c *fiber.Ctx, key string) (uint, error) {
+	param := c.Params(key)
+	if param == "" {
+		return 0, errors.New(fmt.Sprintf("No %s specified", key))
+	}
+	id, err := strconv.ParseUint(param, 10, 32)
 	if err != nil {
 		return 0, err
 	}

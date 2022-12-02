@@ -30,6 +30,21 @@ func GetThemes(c *fiber.Ctx) error {
 	return c.JSON(&themes)
 }
 
+func GetTheme(c *fiber.Ctx) error {
+	id, err := ParseUintParam(c, "id")
+	if err != nil {
+		return ErrorResponse(c, fiber.StatusBadRequest, err.Error())
+	}
+
+	var theme entities.Theme
+	config.Database.Find(&theme, "id = ?", id)
+	if theme.Title == "" {
+		return ErrorResponse(c, fiber.StatusBadRequest, "Theme not found!")
+	}
+	rewriteTheme(&theme, c.BaseURL())
+	return c.JSON(theme)
+}
+
 func CreateTheme(c *fiber.Ctx) error {
 	// get the user
 	user, err := ValidateUser(c)
@@ -102,7 +117,7 @@ func ApproveTheme(c *fiber.Ctx) error {
 	if user.Role == 0 {
 		return ErrorResponse(c, fiber.StatusForbidden, "No permissions!")
 	}
-	id, err := ParseUintParam(c, "id")
+	id, err := ParseUintQuery(c, "id")
 	if err != nil {
 		return ErrorResponse(c, fiber.StatusBadRequest, err.Error())
 	}
@@ -116,7 +131,7 @@ func DeleteTheme(c *fiber.Ctx) error {
 	if err != nil {
 		return nil
 	}
-	id, err := ParseUintParam(c, "id")
+	id, err := ParseUintQuery(c, "id")
 	if err != nil {
 		return ErrorResponse(c, fiber.StatusBadRequest, err.Error())
 	}

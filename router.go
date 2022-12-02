@@ -39,6 +39,7 @@ func CreateRouter() {
 
 	themes := router.Group("/themes")
 	themes.Get("/", handlers.GetThemes)
+	themes.Get("/:id", handlers.GetTheme)
 	themes.Post("/create", handlers.CreateTheme)
 	themes.Delete("/delete", handlers.DeleteTheme)
 	themes.Post("/approve", handlers.ApproveTheme)
