@@ -13,7 +13,14 @@
         if (onConfirm) onConfirm();
         onClose();
     }
+
+    const handleKeydown = (event: any) => {
+        if (event.key !== "Escape") return;
+        onClose();
+    }
 </script>
+
+<svelte:window on:keydown={handleKeydown}/>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <section id="container" on:click={onEvent}>

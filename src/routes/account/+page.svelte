@@ -101,7 +101,7 @@
         const response = await fetchJson("/users/login", getReqJson())
 
         if (response.message) {
-            alert(response.message);
+            showDialog("Server error", response.message);
             return;
         }
 
