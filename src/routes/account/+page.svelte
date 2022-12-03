@@ -23,11 +23,15 @@
         </div>
     </div>
     {/if}
+    {#if dialogShown}
+    <Modal title={dialogTitle} message={dialogMsg} onClose={onDialogClose} onConfirm={onDialogConfirm} />
+    {/if}
 </section>
 
 <script type="ts">
 	import fetchJson from "$lib/fetchjs";
 	import { getToken, setToken, clearToken } from "$lib/token";
+	import Modal from "../../components/Modal.svelte";
 	import { onMount } from "svelte";
 
     let loaded = false;
@@ -36,6 +40,21 @@
     let username: string;
     let password: string;
     let bio: string;
+
+    let dialogShown: boolean = false;
+    let dialogTitle: string;
+    let dialogMsg: string;
+    const onDialogClose = () => {
+        dialogShown = false;
+    }
+    let onDialogConfirm: (() => void) | null = null;
+
+    const showDialog = (title: string, message: string, onConfirm: (() => void) | null = null) => {
+        dialogTitle = title;
+        dialogMsg = message;
+        onDialogConfirm = onConfirm;
+        dialogShown = true;
+    }
 
     onMount(async () => {
         let token = getToken();
@@ -58,14 +77,14 @@
 
     const signUp = async () => {
         if (!password || !username) {
-            alert("Please fill out all the info!");
+            showDialog("Invalid request", "Please fill out all the info!");
             return
         }
 
         const response = await fetchJson("/users/register", getReqJson())
 
         if (response.message) {
-            alert(response.message);
+            showDialog("Server error", response.message);
             return;
         }
 
@@ -75,7 +94,7 @@
 
     const signIn = async () => {
         if (!password || !username) {
-            alert("Please fill out all the info!");
+            showDialog("Invalid request", "Please fill out all the info!");
             return
         }
 
@@ -96,10 +115,12 @@
     }
 
     const deleteAccount = async () => {
-        await fetchJson("/users/delete", {
-            method: "DELETE"
+        showDialog("Delete account", "Are you sure? This can't be undone!", async () => {
+            await fetchJson("/users/delete", {
+                method: "DELETE"
+            });
+            logout();
         });
-        logout();
     }
 </script>
 
