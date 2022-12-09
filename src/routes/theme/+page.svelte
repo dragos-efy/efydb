@@ -34,7 +34,10 @@
 <style>
     #theme {
         height: 60vh;
-        width: 60vw;
+        width: auto;
+        max-width: 100%;
+        background-size: contain;
+        aspect-ratio: 16/9;
         border-radius: var(--efy_radius);
         position: relative;
     }
