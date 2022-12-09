@@ -1,3 +1,7 @@
+<svelte:head>
+    <title>Account</title>
+</svelte:head>
+
 <section>
     {#if !loaded}
     <div class="spin"></div>

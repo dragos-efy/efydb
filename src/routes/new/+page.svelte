@@ -1,3 +1,7 @@
+<svelte:head>
+    <title>New theme</title>
+</svelte:head>
+
 <section>
     <h3>Create Theme</h3>
     <input type="text" bind:value={title} placeholder="Title">

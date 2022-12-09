@@ -1,3 +1,7 @@
+<svelte:head>
+    <title>Themes</title>
+</svelte:head>
+
 <section>
 {#if themes}
 {#each themes as theme}

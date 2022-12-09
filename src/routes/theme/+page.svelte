@@ -1,3 +1,7 @@
+<svelte:head>
+    <title>Theme preview</title>
+</svelte:head>
+
 <section>
 {#if theme}
 <div id="theme" style="background: url({theme.screenshot});">

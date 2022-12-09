@@ -1,3 +1,7 @@
+<svelte:head>
+    <title>Users</title>
+</svelte:head>
+
 <section>
 {#if users}
 {#each users as user}
