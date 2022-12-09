@@ -101,9 +101,17 @@ func PromoteUser(c *fiber.Ctx) error {
 		return ErrorResponse(c, fiber.StatusForbidden, "No permissions for promoting!")
 	}
 
-	userToPromote := new(entities.User)
-	if err := c.BodyParser(userToPromote); err != nil {
+	userToChange := new(entities.User)
+	if err := c.BodyParser(userToChange); err != nil {
 		return ErrorResponse(c, fiber.StatusBadRequest, err.Error())
+	}
+
+	if userToChange.Role < 0 || userToChange.Role > 2 {
+		return ErrorResponse(c, fiber.StatusBadRequest, "Invalid new role!")
+	}
+
+	if userToChange.Role > user.Role {
+		return ErrorResponse(c, fiber.StatusForbidden, "Not priviliged enough!")
 	}
 
 	query := config.Database.Find(&user, user)
@@ -111,8 +119,8 @@ func PromoteUser(c *fiber.Ctx) error {
 		return ErrorResponse(c, fiber.StatusBadRequest, err.Error())
 	}
 
-	user.Role = user.Role + 1
-	config.Database.Where("id = ?", user.ID).Updates(userToPromote)
+	user.Role = userToChange.Role
+	config.Database.Where("id = ?", user.ID).Updates(userToChange)
 
 	return OkResponse(c)
 }
