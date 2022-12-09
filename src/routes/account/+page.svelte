@@ -10,9 +10,6 @@
         <img src="/avatar.svg" alt="Avatar">
         <h2>{userInfo.name}</h2>
         <p>{userInfo.bio}</p>
-        {#if userInfo.role > 0}
-        <button on:click={navigateUsers}></button>
-        {/if}
         <div class="user-buttons">
             <button on:click={logout}>Logout</button>
             <button on:click={deleteAccount}>Delete Account</button>
@@ -130,10 +127,6 @@
             });
             logout();
         });
-    }
-
-    const navigateUsers = () => {
-        window.open("/users");
     }
 </script>
 

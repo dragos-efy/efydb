@@ -1,11 +1,13 @@
 <script lang="ts">
-	import { getToken } from "$lib/token";
+	import { getRole, getToken } from "$lib/token";
 	import { onMount } from "svelte";
 
     let token: string | null;
+    let role: number | null;
 
     onMount(() => {
         token = getToken();
+        role = getRole();
     })
 </script>
 
@@ -15,6 +17,9 @@
         <ul>
             <li><a href="/">Themes</a></li>
             <li><a href="/account">Account</a></li>
+            {#if role && role > 0}
+            <li><a href="/users">Users</a></li>
+            {/if}
             {#if token}
             <li><a href="/new">New</a></li>
             {/if}
