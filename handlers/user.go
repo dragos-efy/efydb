@@ -46,6 +46,15 @@ func CreateUser(c *fiber.Ctx) error {
 }
 
 func GetUsers(c *fiber.Ctx) error {
+	user, err := ValidateUser(c)
+	if err != nil {
+		return nil
+	}
+
+	if user.Role == 0 {
+		return ErrorResponse(c, fiber.StatusForbidden, "Not privileged enough!")
+	}
+
 	users := getAllUsers()
 	return c.JSON(&users)
 }
@@ -111,7 +120,7 @@ func PromoteUser(c *fiber.Ctx) error {
 	}
 
 	if userToChange.Role > user.Role {
-		return ErrorResponse(c, fiber.StatusForbidden, "Not priviliged enough!")
+		return ErrorResponse(c, fiber.StatusForbidden, "Not privileged enough!")
 	}
 
 	query := config.Database.Find(&user, user)
