@@ -6,6 +6,9 @@
 {#if theme}
 <div id="theme" style="background: url({theme.screenshot});">
     <!-- svelte-ignore a11y-click-events-have-key-events -->
+    {#if showApproveBtn}
+    <button id="approve" on:click={approve}>Approve</button>
+    {/if}
     <div>
         <span id="theme-info">
             <h5>{theme.title}</h5>
@@ -26,13 +29,26 @@
 	import fetchJson from "$lib/fetchjs";
 	import { onMount } from "svelte";
     import { page } from '$app/stores';
+	import { getRole } from "$lib/token";
 
     let theme: any;
+    let showApproveBtn = false;
     
     onMount(async () => {
         let id = parseInt($page.url.searchParams.get('id')!);
         theme = await fetchJson(`/themes/${id}`, {});
+        let role = getRole();
+        showApproveBtn = !isNaN(role) && role != 0 && !theme.approved;
     })
+
+    const approve = async () => {
+        let id = parseInt($page.url.searchParams.get('id')!);
+        let response = await fetchJson(`/themes/approve?id=${id}`, {
+            method: 'POST'
+        });
+        if (response.message) alert(response.message)
+        else showApproveBtn = false;
+    }
 </script>
 
 <style>
@@ -65,5 +81,10 @@
 
     #theme>div>a {
         margin: 0 10rem;
+    }
+
+    #approve {
+        float: right;
+        margin-right: 10rem;
     }
 </style>
