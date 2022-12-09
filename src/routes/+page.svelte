@@ -8,6 +8,7 @@
 {/if}
 </section>
 <script type="ts">
+	import { onMount } from "svelte";
 	import ThemePreview from "../components/ThemePreview.svelte";
 	import fetchJson from "../lib/fetchjs";
 
@@ -17,7 +18,9 @@
         themes = await fetchJson("/themes?showUnapproved=true", {});
     }
 
-    fetchThemes();
+    onMount(() => {
+        fetchThemes();
+    })
 </script>
 <style>
     section {

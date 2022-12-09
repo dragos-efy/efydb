@@ -6,6 +6,7 @@
 	import Header from "../components/Header.svelte";
     import { onMount } from "svelte";
     onMount(() => {
+        console.log("import efy");
         import ("../../efy/efy.js");
     })
 </script>
