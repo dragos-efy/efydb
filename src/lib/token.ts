@@ -1,4 +1,5 @@
 const KEY = "token";
+const ROLE = "role"
 
 export const getToken = () => {
     try {
@@ -22,6 +23,25 @@ export const setToken = (token: string) => {
 export const clearToken = () => {
     try {
         localStorage.removeItem(KEY);
+        localStorage.removeItem(ROLE);
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+export const getRole = () => {
+    let role: number = 0;
+    try {
+        role = parseInt(localStorage.getItem(ROLE)!);
+    } catch (error) {
+        console.error(error);
+    }
+    return role;
+}
+
+export const setRole = (role: number) => {
+    try {
+        localStorage.setItem(ROLE, role.toString());
     } catch (error) {
         console.error(error);
     }

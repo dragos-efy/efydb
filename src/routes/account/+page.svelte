@@ -33,7 +33,7 @@
 
 <script type="ts">
 	import fetchJson from "$lib/fetchjs";
-	import { getToken, setToken, clearToken } from "$lib/token";
+	import { getToken, setToken, clearToken, setRole } from "$lib/token";
 	import Modal from "../../components/Modal.svelte";
 	import { onMount } from "svelte";
 
@@ -93,6 +93,7 @@
 
         userInfo = response;
         setToken(response.token);
+        setRole(response.role);
     }
 
     const signIn = async () => {
@@ -110,6 +111,7 @@
 
         userInfo = response;
         setToken(response.token);
+        setRole(response.role);
     }
 
     const logout = () => {
