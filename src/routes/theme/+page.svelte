@@ -24,9 +24,9 @@
     import { page } from '$app/stores';
 
     let theme: any;
-    let id = parseInt($page.url.searchParams.get('id')!);
-
+    
     onMount(async () => {
+        let id = parseInt($page.url.searchParams.get('id')!);
         theme = await fetchJson(`/themes/${id}`, {});
     })
 </script>
