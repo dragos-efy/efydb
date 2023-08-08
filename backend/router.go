@@ -1,9 +1,11 @@
 package main
 
 import (
+	"fmt"
 	"log"
 
 	"github.com/efydb/handlers"
+	"github.com/efydb/util"
 	"github.com/goccy/go-json"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
@@ -23,7 +25,7 @@ func CreateRouter() {
 	}))
 
 	router.Get("/", func(c *fiber.Ctx) error {
-		return handlers.OkResponse(c)
+		return util.OkResponse(c)
 	})
 
 	router.Static("/files", "./files")
@@ -44,5 +46,7 @@ func CreateRouter() {
 	themes.Delete("/delete", handlers.DeleteTheme)
 	themes.Post("/approve", handlers.ApproveTheme)
 
-	log.Fatal(router.Listen(":8001"))
+	portStr :=  ":8001"
+	fmt.Printf("Listening on http://localhost%s", portStr)
+	log.Fatal(router.Listen(portStr))
 }

@@ -1,20 +1,25 @@
 package config
 
 import (
+	"fmt"
+	"os"
+
 	"github.com/efydb/entities"
-	"gorm.io/driver/postgres"
+	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
 
 var Database *gorm.DB
 
-const DATABASE_URI = "postgres://postgres@localhost/efydb"
-
 func Connect() error {
 	var err error
 
+	dir := RootDir()
+	MkDirIfNotExists(dir)
+
+	dbUri := fmt.Sprintf("%s/appdb.sqlite", dir)
 	Database, err = gorm.Open(
-		postgres.Open(DATABASE_URI),
+		sqlite.Open(dbUri),
 		&gorm.Config{
 			SkipDefaultTransaction: true,
 			PrepareStmt:            true,
@@ -27,4 +32,18 @@ func Connect() error {
 	Database.AutoMigrate(&entities.User{}, &entities.Theme{})
 
 	return nil
+}
+
+// The directory where the database and files are stored
+func RootDir() string {
+	dirname, err := os.UserHomeDir()
+	if err != nil {
+		dirname = "."
+	}
+	return fmt.Sprintf("%s/efydb/", dirname)
+}
+func MkDirIfNotExists(dir string) {
+	if _, err := os.Stat(dir); os.IsNotExist(err) {
+		os.Mkdir(dir, 755)
+	}
 }

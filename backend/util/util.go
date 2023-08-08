@@ -1,4 +1,4 @@
-package handlers
+package util
 
 import (
 	"crypto/rand"
@@ -35,7 +35,7 @@ func GenerateSecureToken(length int) string {
 	return hex.EncodeToString(b)
 }
 
-func isBlank(text string) bool {
+func IsBlank(text string) bool {
 	return len(strings.TrimSpace(text)) == 0
 }
 
@@ -43,7 +43,7 @@ func ValidateUser(c *fiber.Ctx) (entities.User, error) {
 	var user entities.User
 	token := c.Get("Authorization")
 
-	if isBlank(token) {
+	if IsBlank(token) {
 		ErrorResponse(c, fiber.StatusBadRequest, "Token can't be empty!")
 		return user, errors.New("Token can't be empty!")
 	}
@@ -84,13 +84,15 @@ func SaveFile(c *fiber.Ctx, file *multipart.FileHeader) (string, error) {
 
 	fullName := fmt.Sprintf("%s.%s", filename, fileExt)
 
-	err := c.SaveFile(file, fmt.Sprintf("./files/%s", fullName))
+	dir := fmt.Sprintf("%s/files/", config.RootDir())
+	config.MkDirIfNotExists(dir)
+	err := c.SaveFile(file, fmt.Sprintf("%s/%s", dir, fullName))
 
 	if err != nil {
 		return "", err
 	}
 
-	return fmt.Sprintf("/files/%s", fullName), nil
+	return fmt.Sprintf("%s/files/%s", config.RootDir(), fullName), nil
 }
 
 func ParseUintQuery(c *fiber.Ctx, key string) (uint, error) {

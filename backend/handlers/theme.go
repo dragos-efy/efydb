@@ -7,6 +7,7 @@ import (
 
 	"github.com/efydb/config"
 	"github.com/efydb/entities"
+	"github.com/efydb/util"
 
 	"github.com/goccy/go-json"
 	"github.com/gofiber/fiber/v2"
@@ -27,15 +28,15 @@ func GetThemes(c *fiber.Ctx) error {
 }
 
 func GetTheme(c *fiber.Ctx) error {
-	id, err := ParseUintParam(c, "id")
+	id, err := util.ParseUintParam(c, "id")
 	if err != nil {
-		return ErrorResponse(c, fiber.StatusBadRequest, err.Error())
+		return util.ErrorResponse(c, fiber.StatusBadRequest, err.Error())
 	}
 
 	var theme entities.Theme
 	config.Database.Find(&theme, "id = ?", id)
 	if theme.Title == "" {
-		return ErrorResponse(c, fiber.StatusBadRequest, "Theme not found!")
+		return util.ErrorResponse(c, fiber.StatusBadRequest, "Theme not found!")
 	}
 	rewriteTheme(&theme, c.BaseURL())
 	return c.JSON(theme)
@@ -43,7 +44,7 @@ func GetTheme(c *fiber.Ctx) error {
 
 func CreateTheme(c *fiber.Ctx) error {
 	// get the user
-	user, err := ValidateUser(c)
+	user, err := util.ValidateUser(c)
 	if err != nil {
 		return nil
 	}
@@ -52,19 +53,19 @@ func CreateTheme(c *fiber.Ctx) error {
 	ss, err := c.FormFile("screenshot")
 
 	if err != nil {
-		return ErrorResponse(c, fiber.StatusBadRequest, "Screenshot missing!")
+		return util.ErrorResponse(c, fiber.StatusBadRequest, "Screenshot missing!")
 	}
 
 	conf, err := c.FormFile("config")
 
 	if err != nil {
-		return ErrorResponse(c, fiber.StatusBadRequest, "No config provided!")
+		return util.ErrorResponse(c, fiber.StatusBadRequest, "No config provided!")
 	}
 
 	data := c.FormValue("data", "")
 
 	if data == "" {
-		return ErrorResponse(c, fiber.StatusBadRequest, "Data can't be empty!")
+		return util.ErrorResponse(c, fiber.StatusBadRequest, "Data can't be empty!")
 	}
 
 	var theme entities.Theme
@@ -72,25 +73,25 @@ func CreateTheme(c *fiber.Ctx) error {
 	jsonErr := json.NewDecoder(reader).Decode(&theme)
 
 	if jsonErr != nil {
-		return ErrorResponse(c, fiber.StatusBadRequest, err.Error())
+		return util.ErrorResponse(c, fiber.StatusBadRequest, err.Error())
 	}
 
 	// create the new files and save them
-	theme.Config, err = SaveFile(c, conf)
+	theme.Config, err = util.SaveFile(c, conf)
 	if err != nil {
-		return ErrorResponse(c, fiber.StatusInternalServerError, err.Error())
+		return util.ErrorResponse(c, fiber.StatusInternalServerError, err.Error())
 	}
 
-	theme.Screenshot, err = SaveFile(c, ss)
+	theme.Screenshot, err = util.SaveFile(c, ss)
 	if err != nil {
-		return ErrorResponse(c, fiber.StatusInternalServerError, err.Error())
+		return util.ErrorResponse(c, fiber.StatusInternalServerError, err.Error())
 	}
 
 	themeConf, err := c.FormFile("imageConfig")
 	if err == nil {
-		theme.ImageConfig, err = SaveFile(c, themeConf)
+		theme.ImageConfig, err = util.SaveFile(c, themeConf)
 		if err != nil {
-			return ErrorResponse(c, fiber.StatusInternalServerError, err.Error())
+			return util.ErrorResponse(c, fiber.StatusInternalServerError, err.Error())
 		}
 	}
 
@@ -106,44 +107,44 @@ func CreateTheme(c *fiber.Ctx) error {
 }
 
 func ApproveTheme(c *fiber.Ctx) error {
-	user, err := ValidateUser(c)
+	user, err := util.ValidateUser(c)
 	if err != nil {
 		return nil
 	}
 	if user.Role == 0 {
-		return ErrorResponse(c, fiber.StatusForbidden, "No permissions!")
+		return util.ErrorResponse(c, fiber.StatusForbidden, "No permissions!")
 	}
-	id, err := ParseUintQuery(c, "id")
+	id, err := util.ParseUintQuery(c, "id")
 	if err != nil {
-		return ErrorResponse(c, fiber.StatusBadRequest, err.Error())
+		return util.ErrorResponse(c, fiber.StatusBadRequest, err.Error())
 	}
 
 	config.Database.Model(&entities.Theme{}).Where("id = ?", uint(id)).Update("approved", true)
-	return OkResponse(c)
+	return util.OkResponse(c)
 }
 
 func DeleteTheme(c *fiber.Ctx) error {
-	user, err := ValidateUser(c)
+	user, err := util.ValidateUser(c)
 	if err != nil {
 		return nil
 	}
-	id, err := ParseUintQuery(c, "id")
+	id, err := util.ParseUintQuery(c, "id")
 	if err != nil {
-		return ErrorResponse(c, fiber.StatusBadRequest, err.Error())
+		return util.ErrorResponse(c, fiber.StatusBadRequest, err.Error())
 	}
 
 	var theme entities.Theme
 	config.Database.Find(&theme, "id = ?", id)
-	if isBlank(theme.Username) {
-		return ErrorResponse(c, fiber.StatusBadRequest, "Theme not found!")
+	if util.IsBlank(theme.Username) {
+		return util.ErrorResponse(c, fiber.StatusBadRequest, "Theme not found!")
 	}
 
 	if user.Name != theme.Username && user.Role == 0 {
-		return ErrorResponse(c, fiber.StatusForbidden, "No permissions to delete the theme!")
+		return util.ErrorResponse(c, fiber.StatusForbidden, "No permissions to delete the theme!")
 	}
 
 	config.Database.Delete(&theme)
-	return OkResponse(c)
+	return util.OkResponse(c)
 }
 
 func rewriteTheme(theme *entities.Theme, baseUrl string) {
