@@ -17,10 +17,11 @@
         height: 40rem;
         width: 40rem;
         padding: 10rem;
+        filter: invert(0.5);
     }
 
     footer a:hover img {
-        background: var(--efy_gradient);
-        opacity: 0.7;
+        background: var(--efy_color);
+        filter: invert(0);
     }
 </style>

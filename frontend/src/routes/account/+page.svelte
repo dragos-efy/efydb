@@ -7,7 +7,7 @@
     <div class="spin"></div>
     {:else if userInfo}
     <div id="user-actions">
-        <img src="/avatar.svg" alt="Avatar">
+        <img id="avatar" src="/avatar.svg" alt="Avatar">
         <h2>{userInfo.name}</h2>
         <p>{userInfo.bio}</p>
         <div class="user-buttons">
@@ -157,5 +157,9 @@
 
     .sign-buttons button:last-child {
         margin-left: 10rem;
+    }
+
+    #avatar {
+        filter: invert(0.5);
     }
 </style>
