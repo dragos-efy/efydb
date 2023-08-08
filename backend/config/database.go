@@ -2,7 +2,6 @@ package config
 
 import (
 	"fmt"
-	"os"
 
 	"github.com/efydb/entities"
 	"gorm.io/driver/sqlite"
@@ -32,18 +31,4 @@ func Connect() error {
 	Database.AutoMigrate(&entities.User{}, &entities.Theme{})
 
 	return nil
-}
-
-// The directory where the database and files are stored
-func RootDir() string {
-	dirname, err := os.UserHomeDir()
-	if err != nil {
-		dirname = "."
-	}
-	return fmt.Sprintf("%s/efydb/", dirname)
-}
-func MkDirIfNotExists(dir string) {
-	if _, err := os.Stat(dir); os.IsNotExist(err) {
-		os.Mkdir(dir, 755)
-	}
 }
