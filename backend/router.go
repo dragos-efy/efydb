@@ -11,6 +11,8 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/cors"
 )
 
+const portStr =  ":8080"
+
 func CreateRouter() {
 	router := fiber.New(
 		fiber.Config{
@@ -46,7 +48,6 @@ func CreateRouter() {
 	themes.Delete("/delete", handlers.DeleteTheme)
 	themes.Post("/approve", handlers.ApproveTheme)
 
-	portStr :=  ":8001"
-	fmt.Printf("Listening on http://localhost%s", portStr)
+	fmt.Printf("Listening on http://localhost%s/", portStr)
 	log.Fatal(router.Listen(portStr))
 }
