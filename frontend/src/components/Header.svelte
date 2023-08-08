@@ -32,5 +32,11 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
+        padding-right: 50rem;
+        padding-top: 10rem;
+    }
+
+    header > nav {
+        padding: 0;
     }
 </style>

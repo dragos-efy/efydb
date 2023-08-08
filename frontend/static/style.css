@@ -4,11 +4,11 @@
 
 section {
     width: 100%;
-    min-height: 70vh;
+    min-height: 77vh;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
-    flex-direction: column;
 }
 
 .spin {

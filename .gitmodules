@@ -1,3 +1,3 @@
-[submodule "frontend/efy"]
-	path = frontend/efy
+[submodule "frontend/static/efy"]
+	path = frontend/static/efy
 	url = https://github.com/dragos-efy/efy

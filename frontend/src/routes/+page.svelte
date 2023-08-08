@@ -48,6 +48,10 @@
         margin: 10rem;
     }
 
+    section {
+        justify-content: start;
+    }
+
     section span {
         display: grid;
         grid-template-columns: auto auto auto;
