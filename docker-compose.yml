@@ -1,0 +1,14 @@
+services:
+  backend:
+    build: backend/.
+    ports:
+      - 8080:8080
+    restart: on-failure
+    volumes:
+      - ./backend:/app
+  frontend:
+    build: frontend/.
+    ports:
+      - 80:4173
+    volumes:
+      - ./frontend:/app
