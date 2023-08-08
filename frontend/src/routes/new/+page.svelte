@@ -20,6 +20,7 @@
 </section>
 
 <script lang="ts">
+    import { goto } from '$app/navigation';
 	import { fetchFormJson }from "$lib/fetchjs";
 
     let title: string;
@@ -43,10 +44,11 @@
         formData.append("config", config.files[0]);
         if (imageConfig.files.length > 0) formData.append("imageConfig", imageConfig.files[0]);
 
-        await fetchFormJson("/themes/create", {
+        const response = await fetchFormJson("/themes/create", {
             method: "POST",
             body: formData,
-        })
+        });
+        if (response.ID) goto("/");
     }
 </script>
 
