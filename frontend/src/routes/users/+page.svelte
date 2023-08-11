@@ -5,8 +5,8 @@
 <section>
 {#if users}
 {#each users as user}
-<div>
-    <span>{user.name}</span>
+<div efy_card>
+    <p>{user.name}</p>
     <input type="range" min="0" max="2" bind:value={user.role}>
     <button on:click={changeUserRank(user)}>Change Rank</button>
 </div>
@@ -47,19 +47,29 @@
 </script>
 
 <style>
+    section {
+        justify-content: start;
+        gap: var(--efy_gap);
+    }
     div {
         display: flex;
         align-items: center;
+        gap: var(--efy_gap0);
         width: 100%;
+        padding: var(--efy_gap0);
+        border-radius: var(--efy_radius2);
     }
 
     div * {
         height: min-content;
-        margin: 5rem 10rem;
+        margin: 0;
     }
 
-    span {
+    p {
         flex-grow: 1;
+        font-weight: bold;
+        padding-left: 5rem;
+        font-size: 20rem;
     }
 
     button {

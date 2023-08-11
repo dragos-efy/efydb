@@ -4,20 +4,23 @@
 
 <section>
 {#if theme}
-<div id="theme" style="background: url({theme.screenshot});">
+<div id="theme" class="efy_trans_filter">
+    <img src="{theme.screenshot}" alt="Theme thumbnail" />
     <!-- svelte-ignore a11y-click-events-have-key-events -->
-    {#if showApproveBtn}
-    <button id="approve" on:click={approve}>Approve</button>
-    {/if}
     <div>
-        <span id="theme-info">
+        <span id="info">
             <h5>{theme.title}</h5>
-            <h6>{theme.username}</h6>
+            <h6>@{theme.username}</h6>
         </span>
-        <a href={theme.config} download="{theme.title}-config.json">Config</a>
-        {#if theme.imageConfig}
-        <a href={theme.imageConfig} download="{theme.title}-image-config.json">Image config</a>
-        {/if}
+        <span class="actions">
+            <a href={theme.config} download="{theme.title}_efy_config.json" role="button"><i efy_icon="arrow_down"></i>Config</a>
+            {#if theme.imageConfig}
+            <a href={theme.imageConfig} download="{theme.title}_efy_images.json" role="button"><i efy_icon="arrow_down"></i>Images</a>
+            {/if}
+            {#if showApproveBtn}
+            <button id="approve" on:click={approve}><i efy_icon="check"></i>Approve</button>
+            {/if}
+        </span>
     </div>
 </div>
 {:else}
@@ -53,38 +56,53 @@
 
 <style>
     #theme {
-        height: 60vh;
-        width: auto;
-        max-width: 100%;
-        background-size: contain;
-        aspect-ratio: 16/9;
+        background: var(--efy_bg1);
+        width: 100%;
+        max-width: calc(var(--efy_100vh) * 0.7);
         border-radius: var(--efy_radius);
-        position: relative;
+        border: var(--efy_border);
+    }
+
+    #theme img {
+        border-radius: var(--efy_radius) var(--efy_radius) 0 0;
+        border-bottom: var(--efy_border);
     }
 
     #theme>div {
         display: flex;
-        position: absolute;
-        bottom: 0;
+        flex-direction: column;
         width: 100%;
-        align-items: center;
-        justify-content: space-between;
-        padding: 20rem;
     }
 
-    #theme-info {
+    #info {
         display: flex;
         flex-direction: column;
-        color: white;
-        mix-blend-mode: difference;
+        padding: 10rem 15rem 15rem 15rem;
     }
 
-    #theme>div>a {
-        margin: 0 10rem;
+    #theme .actions {
+        display: flex;
+        gap: var(--efy_gap0);
+        border-top: var(--efy_border);
+        padding: var(--efy_gap0);
     }
+
+    #theme .actions :is(a, button, i:not([efy_icon=check])) {
+        margin: 0;
+}
 
     #approve {
         float: right;
-        margin-right: 10rem;
+        margin-right: 0 0 10rem 0;
+    }
+
+    [efy_icon=arrow_down]:before {
+        position: relative;
+        margin: 0 8rem 0 0;
+        display: inline-block;
+        -webkit-background-clip: text!important;
+        background-clip: text!important;
+        background: var(--efy_color);
+        color: transparent;
     }
 </style>

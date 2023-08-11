@@ -12,18 +12,15 @@
 </script>
 
 <header>
-    <a href="/">EfyDb</a>
+    <a href="/">efyDB</a>
     <nav>
-        <ul>
-            <li><a href="/">Themes</a></li>
-            <li><a href="/account">Account</a></li>
-            {#if role && role > 0}
-            <li><a href="/users">Users</a></li>
-            {/if}
-            {#if token}
-            <li><a href="/new">New</a></li>
-            {/if}
-        </ul>
+        <a href="/">Themes</a>
+        <a href="/account">Account</a>
+        {#if role && role > 0}
+        <a href="/users">Users</a>
+        {/if}
+        <a href="https://efy.ooo">Apps</a>
+        <button efy_sidebar_btn class="efy_square_btn"><i efy_icon="menu"></i></button>
     </nav>
 </header>
 
@@ -32,11 +29,25 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding-right: 50rem;
-        padding-top: 10rem;
+        padding: 15rem;
+        border-bottom: var(--efy_border);
     }
-
     header > nav {
         padding: 0;
+        display: flex;
+        align-items: center;
+        gap: 15rem;
+    }
+    header [efy_sidebar_btn] {
+        background: transparent;
+        padding: 0;
+        margin: 0;
+        border: 0;
+    }
+    header :is(a, button) {
+        -webkit-text-fill-color: var(--efy_text);
+        color: var(--efy_text);
+        background: transparent;
+        margin: 0;
     }
 </style>

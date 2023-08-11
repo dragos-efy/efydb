@@ -21,7 +21,7 @@
 
 <script lang="ts">
     import { goto } from '$app/navigation';
-	import { fetchFormJson }from "$lib/fetchjs";
+	import { fetchFormJson } from "$lib/fetchjs";
 
     let title: string;
     let description: string;

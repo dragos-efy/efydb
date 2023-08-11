@@ -140,8 +140,11 @@
         align-items: center;
     }
 
-    #user-actions>div {
+    #user-actions > div {
         margin-top: 30rem;
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--efy_gap0);
     }
 
     #user-actions img {
