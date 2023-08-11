@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"net/url"
 	"strings"
 	"time"
 
@@ -25,7 +24,7 @@ func GetThemes(c *fiber.Ctx) error {
 	}
 
 	for index := range themes {
-		rewriteTheme(&themes[index], c.BaseURL())
+		rewriteTheme(&themes[index], c)
 	}
 
 	return c.JSON(&themes)
@@ -42,7 +41,7 @@ func GetTheme(c *fiber.Ctx) error {
 	if theme.Title == "" {
 		return util.ErrorResponse(c, fiber.StatusBadRequest, "Theme not found!")
 	}
-	rewriteTheme(&theme, c.BaseURL())
+	rewriteTheme(&theme, c)
 	return c.JSON(theme)
 }
 
@@ -106,7 +105,7 @@ func CreateTheme(c *fiber.Ctx) error {
 
 	config.Database.Create(&theme)
 
-	rewriteTheme(&theme, c.BaseURL())
+	rewriteTheme(&theme, c)
 	return c.Status(fiber.StatusCreated).JSON(theme)
 }
 
@@ -151,16 +150,9 @@ func DeleteTheme(c *fiber.Ctx) error {
 	return util.OkResponse(c)
 }
 
-func rewriteTheme(theme *entities.Theme, baseUrl string) {
-	theme.Config = rewriteURL(baseUrl, theme.Config)
-	theme.ImageConfig = rewriteURL(baseUrl, theme.ImageConfig)
-	theme.Screenshot = rewriteURL(baseUrl, theme.Screenshot)
-}
-
-func rewriteURL(baseUrl string, path string) string {
-	urlPath, _ := url.Parse(path)
-	if path == "" {
-		return ""
-	}
-	return baseUrl + urlPath.Path
+func rewriteTheme(theme *entities.Theme, c *fiber.Ctx) {
+	baseUrl := c.BaseURL()
+	theme.Config = baseUrl + theme.Config
+	theme.ImageConfig = baseUrl + theme.ImageConfig
+	theme.Screenshot = baseUrl + theme.Screenshot
 }

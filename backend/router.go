@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/efydb/config"
 	"github.com/efydb/handlers"
 	"github.com/efydb/util"
 	"github.com/goccy/go-json"
@@ -11,7 +12,7 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/cors"
 )
 
-const portStr =  ":8080"
+const portStr = ":8080"
 
 func CreateRouter() {
 	router := fiber.New(
@@ -30,7 +31,7 @@ func CreateRouter() {
 		return util.OkResponse(c)
 	})
 
-	router.Static("/files", "./files")
+	router.Static("/files", fmt.Sprintf("%s/files/", config.RootDir()))
 
 	user := router.Group("/users")
 	user.Get("/", handlers.GetUsers)

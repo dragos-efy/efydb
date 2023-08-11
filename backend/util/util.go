@@ -92,7 +92,7 @@ func SaveFile(c *fiber.Ctx, file *multipart.FileHeader) (string, error) {
 		return "", err
 	}
 
-	return fmt.Sprintf("%s/files/%s", config.RootDir(), fullName), nil
+	return fmt.Sprintf("/files/%s", fullName), nil
 }
 
 func ParseUintQuery(c *fiber.Ctx, key string) (uint, error) {
