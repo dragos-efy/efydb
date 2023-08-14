@@ -14,14 +14,20 @@ import (
 
 func GetThemes(c *fiber.Ctx) error {
 	showUnapproved := c.Query("unapproved", "false") == "true"
+	username := c.Query("username", "")
 
 	var themes []entities.Theme
 
-	if showUnapproved {
-		config.Database.Find(&themes)
-	} else {
-		config.Database.Where("approved = ?", true).Find(&themes)
+	query := config.Database
+	if !showUnapproved {
+		query = query.Where("approved = ?", true)
 	}
+
+	if username != "" {
+		query = query.Where("username = ?", username)
+	}
+
+	query.Find(&themes)
 
 	for index := range themes {
 		rewriteTheme(&themes[index], c)
