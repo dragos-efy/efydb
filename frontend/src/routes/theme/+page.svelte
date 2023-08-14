@@ -9,7 +9,7 @@
     <div>
         <span id="info">
             <h5>{theme.title}</h5>
-            <h6>@{theme.username}</h6>
+            <a href={`/user?username=${theme.username}`}><h6>@{theme.username}</h6></a>
         </span>
         <span class="actions">
             <a href={theme.config} download="{theme.title}_efy_config.json" role="button"><i efy_icon="arrow_down"></i>Config</a>
@@ -43,16 +43,15 @@
     let showApproveBtn = false;
     let showDeleteBtn = false;
     
+    const getId = () => parseInt($page.url.searchParams.get('id')!);
+
     onMount(async () => {
-        let id = parseInt($page.url.searchParams.get('id')!);
-        theme = await fetchJson(`/themes/${id}`, {});
+        theme = await fetchJson(`/themes/${getId()}`, {});
         let role = getRole();
         let isAdmin = !isNaN(role) && role != 0;
         showApproveBtn = isAdmin && !theme.approved;
         showDeleteBtn = isAdmin || getUsername() == theme.username;
     })
-
-    const getId = () => parseInt($page.url.searchParams.get('id')!);
 
     const approve = async () => {
         let response = await fetchJson(`/themes/approve?id=${getId()}`, {

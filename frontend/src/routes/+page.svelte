@@ -7,7 +7,7 @@
 <input type="checkbox" id="showUnapproved" on:change={onToggleShowUnapproved} bind:value={showUnapproved} />
 <label for="showUnapproved">Unapproved</label>
 {/if}
-<span>
+<span id="themes-grid">
     {#if token}
     <a class="new-theme efy_color_trans" efy_card href="/new">
         <i efy_icon="plus"></i>
@@ -63,7 +63,7 @@
         justify-content: start;
     }
 
-    section span {
+    #themes-grid {
         display: grid;
         grid-template-columns: repeat(auto-fill,minmax(240rem,1fr));
         flex-wrap: wrap;

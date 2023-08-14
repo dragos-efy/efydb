@@ -35,6 +35,7 @@ func CreateRouter() {
 
 	user := router.Group("/users")
 	user.Get("/", handlers.GetUsers)
+	user.Get("/:name", handlers.GetUserInfo)
 	user.Get("/account", handlers.GetUser)
 	user.Post("/register", handlers.CreateUser)
 	user.Post("/login", handlers.LoginUser)

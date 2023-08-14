@@ -60,12 +60,16 @@ func GetUsers(c *fiber.Ctx) error {
 	return c.JSON(&users)
 }
 
+func removeSecretUserInfo(user *entities.User) {
+	user.Token = ""
+	user.Password = ""
+}
+
 func getAllUsers() []entities.User {
 	var users []entities.User
 	config.Database.Find(&users)
 	for index := range users {
-		users[index].Token = ""
-		users[index].Password = ""
+		removeSecretUserInfo(&users[index])
 	}
 	return users
 }
@@ -165,4 +169,30 @@ func GetUser(c *fiber.Ctx) error {
 		return nil
 	}
 	return c.JSON(user)
+}
+
+func GetUserInfo(c *fiber.Ctx) error {
+	name := c.Params("name")
+
+	if util.IsBlank(name) {
+		return util.ErrorResponse(c, fiber.StatusBadRequest, "No valid username provided!")
+	}
+
+	var user entities.User
+	if config.Database.Where("name = ?", name).Find(&user).RowsAffected == 0 {
+		return util.ErrorResponse(c, fiber.StatusBadRequest, "User not found!")
+	}
+	removeSecretUserInfo(&user)
+
+	var themes []entities.Theme
+	config.Database.Where("username = ?", name).Find(&themes)
+	for index := range themes {
+		rewriteTheme(&themes[index], c)
+	}
+
+	userInfo := entities.UserInfo{
+		User:   user,
+		Themes: themes,
+	}
+	return c.JSON(userInfo)
 }
