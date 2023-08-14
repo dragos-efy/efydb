@@ -65,7 +65,7 @@
 					<button on:click={approve}><i efy_icon="check" />Approve</button>
 				{/if}
 				{#if showDeleteBtn}
-					<button on:click={deleteTheme}><i efy_icon="delete" />Delete</button>
+					<button on:click={deleteTheme}><i efy_icon="remove" />Delete</button>
 				{/if}
 			</div>
 		</div>
@@ -112,7 +112,7 @@
 	}
 
 	[efy_icon='arrow_down']:before,
-	[efy_icon='delete']:before {
+	[efy_icon='remove']:before {
 		position: relative;
 		margin: 0 8rem 0 0;
 		display: inline-block;
