@@ -58,11 +58,11 @@
 </script>
 
 <svelte:head>
-	<title>New theme</title>
+	<title>{ id ? "Edit theme" : "New theme"}</title>
 </svelte:head>
 
 <section>
-	<h3>Create Theme</h3>
+	<h3>{ id ? "Edit theme" : "New theme"}</h3>
 	<input type="text" bind:value={title} placeholder="Title" />
 	<input type="text" bind:value={description} placeholder="Description" />
 	<div id="buttons">
