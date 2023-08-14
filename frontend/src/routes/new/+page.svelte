@@ -19,10 +19,10 @@
 		}
 		title = theme.title;
 		description = theme.description;
-	}
+	};
 
 	onMount(() => {
-		id = $page.url.searchParams.get("id");
+		id = $page.url.searchParams.get('id');
 		if (id != null) {
 			loadTheme(id);
 		}
@@ -46,28 +46,31 @@
 		formData.append('config', config.files[0]);
 		if (imageConfig.files.length > 0) formData.append('imageConfig', imageConfig.files[0]);
 
-		const response = (id == null) ? await fetchFormJson('/themes/create', {
-			method: 'POST',
-			body: formData
-		}) : await fetchFormJson(`/themes/edit?id=${id}`, {
-			method: 'PATCH',
-			body: formData,
-		});
+		const response =
+			id == null
+				? await fetchFormJson('/themes/create', {
+						method: 'POST',
+						body: formData
+				  })
+				: await fetchFormJson(`/themes/edit?id=${id}`, {
+						method: 'PATCH',
+						body: formData
+				  });
 		if (response.ID) goto('/');
 	};
 </script>
 
 <svelte:head>
-	<title>{ id ? "Edit theme" : "New theme"}</title>
+	<title>{id ? 'Edit theme' : 'New theme'}</title>
 </svelte:head>
 
 <section>
-	<h3>{ id ? "Edit theme" : "New theme"}</h3>
+	<h3>{id ? 'Edit theme' : 'New theme'}</h3>
 	<input type="text" bind:value={title} placeholder="Title" />
 	<input type="text" bind:value={description} placeholder="Description" />
 	<div id="buttons">
 		{#if id}
-		<p>Please note that all files must be re-uploaded when editing a theme!</p>
+			<p>Please note that all files must be re-uploaded when editing a theme!</p>
 		{/if}
 		<div id="files">
 			<input type="file" id="screenshot" accept="image/*" bind:this={screenshot} />

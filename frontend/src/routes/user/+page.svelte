@@ -23,12 +23,16 @@
 	});
 </script>
 
+<svelte:head>
+	<title>{user?.name ?? 'User profile'}</title>
+</svelte:head>
+
 <section>
 	{#if user}
 		<div id="user-info">
 			<h5>{user.name}</h5>
 			<p>{user.bio}</p>
-            <p>Uploaded themes: {themes.length}</p>
+			<p>Uploaded themes: {themes.length}</p>
 		</div>
 		<span id="themes-grid">
 			{#each themes as theme}
@@ -43,11 +47,11 @@
 <style>
 	section {
 		justify-content: start;
-        align-items: start;
+		align-items: start;
 	}
 
 	#user-info {
-		margin: 5q0rem 5rem;
+		margin: 50rem 5rem;
 	}
 
 	#themes-grid {
