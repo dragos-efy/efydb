@@ -34,7 +34,7 @@
 
 <script type="ts">
 	import fetchJson from "$lib/fetchjs";
-	import { getToken, setToken, clearToken, setRole } from "$lib/token";
+	import { getToken, logoutUser, setUserInfo } from "$lib/token";
 	import Modal from "../../components/Modal.svelte";
 	import { onMount } from "svelte";
 
@@ -93,8 +93,7 @@
         }
 
         userInfo = response;
-        setToken(response.token);
-        setRole(response.role);
+        setUserInfo(response);
     }
 
     const signIn = async () => {
@@ -111,13 +110,12 @@
         }
 
         userInfo = response;
-        setToken(response.token);
-        setRole(response.role);
+        setUserInfo(response);
     }
 
     const logout = () => {
         userInfo = null,
-        clearToken();
+        logoutUser();
     }
 
     const deleteAccount = async () => {

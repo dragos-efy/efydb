@@ -4,9 +4,8 @@
 
 <section>
 {#if theme}
-<div id="theme" class="efy_trans_filter">
-    <img src="{theme.screenshot}" alt="Theme thumbnail" />
-    <!-- svelte-ignore a11y-click-events-have-key-events -->
+<img id="theme" src={theme.screenshot} alt={theme.title} />
+<div id="btns-container">
     <div>
         <span id="info">
             <h5>{theme.title}</h5>
@@ -17,10 +16,15 @@
             {#if theme.imageConfig}
             <a href={theme.imageConfig} download="{theme.title}_efy_images.json" role="button"><i efy_icon="arrow_down"></i>Images</a>
             {/if}
-            {#if showApproveBtn}
-            <button id="approve" on:click={approve}><i efy_icon="check"></i>Approve</button>
-            {/if}
         </span>
+    </div>
+    <div>
+        {#if showApproveBtn}
+        <button on:click={approve}><i efy_icon="check"></i>Approve</button>
+        {/if}
+        {#if showDeleteBtn}
+        <button on:click={deleteTheme}><i efy_icon="delete"></i>Delete</button>
+        {/if}
     </div>
 </div>
 {:else}
@@ -32,71 +36,79 @@
 	import fetchJson from "$lib/fetchjs";
 	import { onMount } from "svelte";
     import { page } from '$app/stores';
-	import { getRole } from "$lib/token";
+	import { getRole, getUsername } from "$lib/token";
+	import { goto } from "$app/navigation";
 
     let theme: any;
     let showApproveBtn = false;
+    let showDeleteBtn = false;
     
     onMount(async () => {
         let id = parseInt($page.url.searchParams.get('id')!);
         theme = await fetchJson(`/themes/${id}`, {});
         let role = getRole();
-        showApproveBtn = !isNaN(role) && role != 0 && !theme.approved;
+        let isAdmin = !isNaN(role) && role != 0;
+        showApproveBtn = isAdmin && !theme.approved;
+        showDeleteBtn = isAdmin || getUsername() == theme.username;
     })
 
+    const getId = () => parseInt($page.url.searchParams.get('id')!);
+
     const approve = async () => {
-        let id = parseInt($page.url.searchParams.get('id')!);
-        let response = await fetchJson(`/themes/approve?id=${id}`, {
+        let response = await fetchJson(`/themes/approve?id=${getId()}`, {
             method: 'POST'
         });
-        if (response.message) alert(response.message)
+        if (response.message) alert(response.message);
         else showApproveBtn = false;
+    }
+
+    const deleteTheme = async () => {
+        let response = await fetchJson(`/themes/delete?id=${getId()}`, {
+            method: 'DELETE'
+        });
+        if (response.message != "ok") alert(response.message);
+        else goto("/");
     }
 </script>
 
 <style>
     #theme {
-        background: var(--efy_bg1);
-        width: 100%;
-        max-width: calc(var(--efy_100vh) * 0.7);
+        height: auto;
+        max-width: 40vw;
+        background-size: contain;
+        aspect-ratio: 16/9;
         border-radius: var(--efy_radius);
-        border: var(--efy_border);
     }
 
-    #theme img {
-        border-radius: var(--efy_radius) var(--efy_radius) 0 0;
-        border-bottom: var(--efy_border);
-    }
-
-    #theme>div {
+    #btns-container {
         display: flex;
-        flex-direction: column;
         width: 100%;
+        max-width: 40vw;
+        align-items: center;
+        justify-content: space-between;
+        padding: 20rem 0rem;
+    }
+
+    #btns-container > div {
+        display: flex;
+        align-items: center;
     }
 
     #info {
         display: flex;
         flex-direction: column;
-        padding: 10rem 15rem 15rem 15rem;
+        padding: 5rem;
     }
 
-    #theme .actions {
-        display: flex;
-        gap: var(--efy_gap0);
-        border-top: var(--efy_border);
-        padding: var(--efy_gap0);
+    #btns-container a {
+        margin: 10rem;
     }
 
-    #theme .actions :is(a, button, i:not([efy_icon=check])) {
-        margin: 0;
-}
-
-    #approve {
-        float: right;
-        margin-right: 0 0 10rem 0;
+    #btns-container button {
+        margin: 0 5rem;
     }
 
-    [efy_icon=arrow_down]:before {
+    [efy_icon=arrow_down]:before, [efy_icon=delete]:before {
         position: relative;
         margin: 0 8rem 0 0;
         display: inline-block;
