@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"strconv"
 	"strings"
 	"time"
 
@@ -135,7 +136,7 @@ func EditTheme(c *fiber.Ctx) error {
 		return nil
 	}
 
-	id, err := util.ParseUintParam(c, "id")
+	id, err := strconv.ParseUint(c.Query("id"), 10, 32)
 	if err != nil {
 		return util.ErrorResponse(c, fiber.StatusBadRequest, err.Error())
 	}
@@ -217,7 +218,14 @@ func DeleteTheme(c *fiber.Ctx) error {
 
 func rewriteTheme(theme *entities.Theme, c *fiber.Ctx) {
 	baseUrl := c.BaseURL()
-	theme.Config = baseUrl + theme.Config
-	theme.ImageConfig = baseUrl + theme.ImageConfig
-	theme.Screenshot = baseUrl + theme.Screenshot
+	theme.Config = rewriteUrl(baseUrl, theme.Config)
+	theme.ImageConfig = rewriteUrl(baseUrl, theme.ImageConfig)
+	theme.Screenshot = rewriteUrl(baseUrl, theme.Screenshot)
+}
+
+func rewriteUrl(baseUrl string, url string) string {
+	if util.IsBlank(url) {
+		return url
+	}
+	return baseUrl + url
 }

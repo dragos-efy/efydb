@@ -7,6 +7,7 @@
 
 	let theme: any;
 	let showApproveBtn = false;
+	let showEditBtn = false;
 	let showDeleteBtn = false;
 
 	const getId = () => parseInt($page.url.searchParams.get('id')!);
@@ -15,8 +16,11 @@
 		theme = await fetchJson(`/themes/${getId()}`, {});
 		let role = getRole();
 		let isAdmin = !isNaN(role) && role != 0;
+		let isCreator = getUsername() == theme.username;
+
 		showApproveBtn = isAdmin && !theme.approved;
-		showDeleteBtn = isAdmin || getUsername() == theme.username;
+		showEditBtn = isCreator;
+		showDeleteBtn = isAdmin || isCreator;
 	});
 
 	const approve = async () => {
@@ -25,6 +29,10 @@
 		});
 		if (response.message) alert(response.message);
 		else showApproveBtn = false;
+	};
+
+	const editTheme = () => {
+		goto(`/new?id=${getId()}`);
 	};
 
 	const deleteTheme = async () => {
@@ -63,6 +71,9 @@
 			<div>
 				{#if showApproveBtn}
 					<button on:click={approve}><i efy_icon="check" />Approve</button>
+				{/if}
+				{#if showEditBtn}
+					<button on:click={editTheme}><i efy_icon="edit" />Edit</button>
 				{/if}
 				{#if showDeleteBtn}
 					<button on:click={deleteTheme}><i efy_icon="remove" />Delete</button>
@@ -111,8 +122,9 @@
 		margin: 0 5rem;
 	}
 
-	[efy_icon='arrow_down']:before,
-	[efy_icon='remove']:before {
+	[efy_icon='arrow_down']::before,
+	[efy_icon='edit']::before,
+	[efy_icon='remove']::before {
 		position: relative;
 		margin: 0 8rem 0 0;
 		display: inline-block;
