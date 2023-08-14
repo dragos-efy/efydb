@@ -151,6 +151,8 @@ func EditTheme(c *fiber.Ctx) error {
 		return nil
 	}
 
+	deleteThemeFiles(theme)
+
 	theme.Title = newTheme.Title
 	theme.Description = newTheme.Description
 	theme.Config = newTheme.Config
@@ -181,6 +183,12 @@ func ApproveTheme(c *fiber.Ctx) error {
 	return util.OkResponse(c)
 }
 
+func deleteThemeFiles(theme entities.Theme) {
+	util.DeleteFile(theme.Config)
+	util.DeleteFile(theme.ImageConfig)
+	util.DeleteFile(theme.Screenshot)
+}
+
 func DeleteTheme(c *fiber.Ctx) error {
 	user, err := util.ValidateUser(c)
 	if err != nil {
@@ -201,7 +209,9 @@ func DeleteTheme(c *fiber.Ctx) error {
 		return util.ErrorResponse(c, fiber.StatusForbidden, "No permissions to delete the theme!")
 	}
 
+	deleteThemeFiles(theme)
 	config.Database.Delete(&theme)
+
 	return util.OkResponse(c)
 }
 

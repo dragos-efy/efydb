@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"mime/multipart"
+	"os"
 	"strconv"
 	"strings"
 
@@ -93,6 +94,16 @@ func SaveFile(c *fiber.Ctx, file *multipart.FileHeader) (string, error) {
 	}
 
 	return fmt.Sprintf("/files/%s", fullName), nil
+}
+
+func DeleteFile(path string) error {
+	if IsBlank(path) {
+		// the file doesn't need to be deleted if it doesn't exist
+		return nil
+	}
+
+	fullPath := fmt.Sprintf("%s%s", config.RootDir(), path)
+	return os.Remove(fullPath)
 }
 
 func ParseUintQuery(c *fiber.Ctx, key string) (uint, error) {
