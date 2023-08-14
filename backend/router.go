@@ -47,6 +47,7 @@ func CreateRouter() {
 	themes.Get("/", handlers.GetThemes)
 	themes.Get("/:id", handlers.GetTheme)
 	themes.Post("/create", handlers.CreateTheme)
+	themes.Patch("/edit", handlers.EditTheme)
 	themes.Delete("/delete", handlers.DeleteTheme)
 	themes.Post("/approve", handlers.ApproveTheme)
 

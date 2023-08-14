@@ -47,7 +47,7 @@
 	}
 
 	#user-info {
-		margin: 50rem 5rem;
+		margin: 5q0rem 5rem;
 	}
 
 	#themes-grid {

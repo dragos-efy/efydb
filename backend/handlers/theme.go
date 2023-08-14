@@ -51,6 +51,61 @@ func GetTheme(c *fiber.Ctx) error {
 	return c.JSON(theme)
 }
 
+func createFilesForTheme(c *fiber.Ctx) (entities.Theme, error) {
+	var theme entities.Theme
+
+	// get the uploaded screenshot
+	ss, err := c.FormFile("screenshot")
+
+	if err != nil {
+		return theme, util.ErrorResponse(c, fiber.StatusBadRequest, "Screenshot missing!")
+	}
+
+	conf, err := c.FormFile("config")
+
+	if err != nil {
+		return theme, util.ErrorResponse(c, fiber.StatusBadRequest, "No config provided!")
+	}
+
+	data := c.FormValue("data", "")
+
+	if data == "" {
+		return theme, util.ErrorResponse(c, fiber.StatusBadRequest, "Data can't be empty!")
+	}
+
+	reader := strings.NewReader(data)
+	jsonErr := json.NewDecoder(reader).Decode(&theme)
+
+	if jsonErr != nil {
+		return theme, util.ErrorResponse(c, fiber.StatusBadRequest, err.Error())
+	}
+
+	if util.IsBlank(theme.Title) {
+		return theme, util.ErrorResponse(c, fiber.StatusBadRequest, "Title can't be blank")
+	}
+
+	// create the new files and save them
+	theme.Config, err = util.SaveFile(c, conf)
+	if err != nil {
+		return theme, util.ErrorResponse(c, fiber.StatusInternalServerError, err.Error())
+	}
+
+	theme.Screenshot, err = util.SaveFile(c, ss)
+	if err != nil {
+		return theme, util.ErrorResponse(c, fiber.StatusInternalServerError, err.Error())
+	}
+
+	themeConf, err := c.FormFile("imageConfig")
+	if err == nil {
+		theme.ImageConfig, err = util.SaveFile(c, themeConf)
+		if err != nil {
+			return theme, util.ErrorResponse(c, fiber.StatusInternalServerError, err.Error())
+		}
+	}
+
+	return theme, nil
+}
+
 func CreateTheme(c *fiber.Ctx) error {
 	// get the user
 	user, err := util.ValidateUser(c)
@@ -58,50 +113,9 @@ func CreateTheme(c *fiber.Ctx) error {
 		return nil
 	}
 
-	// get the uploaded screenshot
-	ss, err := c.FormFile("screenshot")
-
+	theme, err := createFilesForTheme(c)
 	if err != nil {
-		return util.ErrorResponse(c, fiber.StatusBadRequest, "Screenshot missing!")
-	}
-
-	conf, err := c.FormFile("config")
-
-	if err != nil {
-		return util.ErrorResponse(c, fiber.StatusBadRequest, "No config provided!")
-	}
-
-	data := c.FormValue("data", "")
-
-	if data == "" {
-		return util.ErrorResponse(c, fiber.StatusBadRequest, "Data can't be empty!")
-	}
-
-	var theme entities.Theme
-	reader := strings.NewReader(data)
-	jsonErr := json.NewDecoder(reader).Decode(&theme)
-
-	if jsonErr != nil {
-		return util.ErrorResponse(c, fiber.StatusBadRequest, err.Error())
-	}
-
-	// create the new files and save them
-	theme.Config, err = util.SaveFile(c, conf)
-	if err != nil {
-		return util.ErrorResponse(c, fiber.StatusInternalServerError, err.Error())
-	}
-
-	theme.Screenshot, err = util.SaveFile(c, ss)
-	if err != nil {
-		return util.ErrorResponse(c, fiber.StatusInternalServerError, err.Error())
-	}
-
-	themeConf, err := c.FormFile("imageConfig")
-	if err == nil {
-		theme.ImageConfig, err = util.SaveFile(c, themeConf)
-		if err != nil {
-			return util.ErrorResponse(c, fiber.StatusInternalServerError, err.Error())
-		}
+		return nil
 	}
 
 	// set approved false by default
@@ -113,6 +127,41 @@ func CreateTheme(c *fiber.Ctx) error {
 
 	rewriteTheme(&theme, c)
 	return c.Status(fiber.StatusCreated).JSON(theme)
+}
+
+func EditTheme(c *fiber.Ctx) error {
+	user, err := util.ValidateUser(c)
+	if err != nil {
+		return nil
+	}
+
+	id, err := util.ParseUintParam(c, "id")
+	if err != nil {
+		return util.ErrorResponse(c, fiber.StatusBadRequest, err.Error())
+	}
+
+	var theme entities.Theme
+	config.Database.Find(&theme, "id = ?", id)
+	if theme.Username != user.Name {
+		return util.ErrorResponse(c, fiber.StatusForbidden, "No permissions to edit the theme!")
+	}
+
+	newTheme, err := createFilesForTheme(c)
+	if err != nil {
+		return nil
+	}
+
+	theme.Title = newTheme.Title
+	theme.Description = newTheme.Description
+	theme.Config = newTheme.Config
+	theme.EfyVersion = newTheme.EfyVersion
+	theme.ImageConfig = newTheme.ImageConfig
+	theme.Screenshot = newTheme.Screenshot
+	theme.Tags = newTheme.Tags
+
+	config.Database.Where("id = ?", theme.ID).Updates(theme)
+
+	return c.JSON(theme)
 }
 
 func ApproveTheme(c *fiber.Ctx) error {
