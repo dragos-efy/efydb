@@ -7,7 +7,7 @@
     <div class="spin"></div>
     {:else if userInfo}
     <div id="user-actions">
-        <img id="avatar" src="/avatar.svg" alt="Avatar">
+        <i efy_icon="user" id="avatar" title="Avatar" />
         <h2>{userInfo.name}</h2>
         <p>{userInfo.bio}</p>
         <div class="user-buttons">
@@ -130,8 +130,6 @@
 
 <style>
     #user-actions {
-        min-width: 30vw;
-        min-height: 50vh;
         display: flex;
         flex-direction: column;
         justify-content: center;
@@ -145,22 +143,29 @@
         gap: var(--efy_gap0);
     }
 
-    #user-actions img {
-        height: 180rem;
-        width: auto;
-        margin-bottom: 20rem;
+    :is(.user-buttons, .sign-buttons) button {
+        margin: 0;
     }
 
     .sign-buttons {
         display: flex;
-        justify-content: end;
-    }
-
-    .sign-buttons button:last-child {
-        margin-left: 10rem;
+        gap: var(--efy_gap0);
     }
 
     #avatar {
-        filter: invert(0.5);
+        padding: 20rem;
+        line-height: 1;
+        font-size: 80rem;
+        border-radius: calc(var(--efy_radius2) * 2);
+        border: 8rem solid var(--efy_text);
+        margin: 0 0 25rem 0;
+    }
+
+    #avatar:before {
+        color: var(--efy_text);
+    }
+
+    #signUp {
+        max-width: calc(var(--efy_100vh) * 0.7);
     }
 </style>
