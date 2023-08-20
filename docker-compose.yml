@@ -10,6 +10,3 @@ services:
     build: frontend/.
     ports:
       - 80:4173
-
-volumes:
-  data:
