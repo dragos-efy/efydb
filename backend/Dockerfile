@@ -1,5 +1,5 @@
 # Start from golang base image
-FROM golang:alpine
+FROM golang:alpine AS builder
 
 # Install git.
 # Git is required for fetching the dependencies.
@@ -12,14 +12,14 @@ WORKDIR /app
 # Copy the source from the current directory to the working Directory inside the container
 COPY . .
 
-# Download all the dependencies
-RUN go get -d -v ./...
-
-# Install the package
-RUN go install -v ./...
-
 # Build the Go app
-RUN go build -o /build
+RUN  --mount=type=cache,target=/root/.cache/go-build \
+    go build -ldflags "-s -w" -o /build
+
+FROM alpine:edge
+
+# Copy our built binary file from the previous stage
+COPY --from=builder /build /build
 
 # Expose port 8080 to the outside world
 EXPOSE 8080

@@ -1,12 +1,17 @@
 FROM node:lts-alpine
+
 ENV NODE_ENV=production
+
 WORKDIR /app
-COPY package*.json ./
-RUN yarn
+
+COPY package.json yarn.lock ./
+
+RUN --mount=type=cache,target=/root/.cache/yarn \
+    yarn install --frozen-lockfile --production
 
 COPY . .
+
 RUN yarn build
 
-ENV HOST=0.0.0.0
-EXPOSE 4173
-CMD ["yarn", "preview", "--host", "0.0.0.0"]
+EXPOSE 3000
+CMD ["node", "build"]
