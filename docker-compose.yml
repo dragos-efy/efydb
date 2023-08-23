@@ -5,8 +5,12 @@ services:
       - 8080:8080
     restart: on-failure
     volumes:
-      - /efydb:/root/efydb
+      - efydb:/root/efydb
   frontend:
     build: frontend/.
     ports:
-      - 80:4173
+      - 3000:3000
+
+volumes:
+  efydb:
+
