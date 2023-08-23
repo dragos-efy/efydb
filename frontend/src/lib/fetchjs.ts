@@ -1,9 +1,8 @@
 import { getToken } from "./token";
-
-const BASE_URL = "http://127.0.0.1:8080"
+import { PUBLIC_API_URL } from "$env/static/public";
 
 const fetchJson = async (path: string, options: any) => {
-    let response = await fetch(new URL(path, BASE_URL), {
+    let response = await fetch(new URL(path, PUBLIC_API_URL), {
         ...options,
         headers: {
             "Authorization": getToken(),
@@ -14,7 +13,7 @@ const fetchJson = async (path: string, options: any) => {
 }
 
 export const fetchFormJson = async (path: string, options: any) => {
-    let response = await fetch(new URL(path, BASE_URL), {
+    let response = await fetch(new URL(path, PUBLIC_API_URL), {
         ...options,
         headers: {
             "Authorization": getToken(),
