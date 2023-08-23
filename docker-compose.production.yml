@@ -1,0 +1,12 @@
+services:
+  backend:
+    build: backend/.
+    restart: on-failure
+    volumes:
+      - efydb:/root/efydb
+  frontend:
+    build: frontend/.
+
+volumes:
+  efydb:
+
