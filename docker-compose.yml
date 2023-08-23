@@ -1,15 +1,15 @@
 services:
   backend:
     build: backend/.
-    ports:
-      - 8080:8080
+    #ports:
+      #- 8080:8080
     restart: on-failure
     volumes:
       - efydb:/root/efydb
   frontend:
     build: frontend/.
-    ports:
-      - 3000:3000
+    #ports:
+      #- 3000:3000
 
 volumes:
   efydb:
