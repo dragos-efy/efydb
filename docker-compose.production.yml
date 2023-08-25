@@ -5,7 +5,10 @@ services:
     volumes:
       - efydb:/root/efydb
   frontend:
-    build: frontend/.
+    build: 
+      context: frontend/.
+      args:
+        - PUBLIC_API_URL=https://dbapi.efy.ooo
 
 volumes:
   efydb:
