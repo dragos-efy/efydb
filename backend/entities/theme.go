@@ -11,7 +11,6 @@ type Theme struct {
 	ImageConfig string `json:"imageConfig"`
 	Screenshot  string `json:"screenshot"`
 	Uploaded    int64  `json:"uploaded"`
-	EfyVersion  uint   `json:"efy_version"`
 	Approved    bool   `json:"approved"`
 	Score       int    `json:"score"`
 	UserScore   int    `json:"user_score" gorm:"-"`

@@ -197,10 +197,8 @@ func EditTheme(c *fiber.Ctx) error {
 	theme.Title = newTheme.Title
 	theme.Description = newTheme.Description
 	theme.Config = newTheme.Config
-	theme.EfyVersion = newTheme.EfyVersion
 	theme.ImageConfig = newTheme.ImageConfig
 	theme.Screenshot = newTheme.Screenshot
-	theme.Tags = newTheme.Tags
 
 	config.Database.Where("id = ?", theme.ID).Updates(theme)
 
