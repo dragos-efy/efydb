@@ -27,6 +27,7 @@ func GetThemes(c *fiber.Ctx) error {
 	if err != nil {
 		limit = 20
 	}
+	searchQuery := c.Query("q")
 
 	var themes []entities.Theme
 
@@ -37,6 +38,11 @@ func GetThemes(c *fiber.Ctx) error {
 
 	if username != "" {
 		query = query.Where("username = ?", username)
+	}
+
+	if !util.IsBlank(searchQuery) {
+		q := "%" + searchQuery + "%"
+		query = query.Where("title LIKE ? OR description LIKE ? OR username LIKE ?", q, q, q)
 	}
 
 	if sortOrder == "score" {

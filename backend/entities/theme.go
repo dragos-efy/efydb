@@ -6,7 +6,6 @@ type Theme struct {
 	gorm.Model
 	Title       string `json:"title"`
 	Description string `json:"description"`
-	Tags        string `json:"tags"`
 	Username    string `json:"username"`
 	Config      string `json:"config"`
 	ImageConfig string `json:"imageConfig"`
