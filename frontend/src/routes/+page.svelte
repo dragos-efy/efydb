@@ -6,26 +6,49 @@
 
 	import { getRole, getToken } from '$lib/token';
 
-	let themes: any[];
+	let themes: any[] = [];
 	let role: number = 0;
 	let showUnapproved = false;
 
 	let token: string | null;
+	let nextPage = 1;
+	let loading = false;
 
 	const fetchThemes = async () => {
-		token = getToken();
+		if (loading) return;
 
-		role = getRole();
-		themes = await fetchJson(`/themes?unapproved=${showUnapproved}`, {});
+		loading = true;
+		const newThemes = await fetchJson(
+			`/themes?unapproved=${showUnapproved}&page=${nextPage}&limit=20&sort=score`,
+			{}
+		);
+		themes.push(...newThemes);
+		themes = themes;
+
+		nextPage += 1;
+		loading = false;
 	};
 
 	const onToggleShowUnapproved = () => {
 		showUnapproved = !showUnapproved;
+		themes = [];
+		nextPage = 1;
 		fetchThemes();
 	};
 
+	const initScrollListener = () => {
+		document.addEventListener('scroll', () => {
+			if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {
+				fetchThemes();
+			}
+		});
+	};
+
 	onMount(() => {
+		token = getToken();
+		role = getRole();
 		fetchThemes();
+		initScrollListener();
 	});
 </script>
 
@@ -50,7 +73,7 @@
 				<p>New Theme</p>
 			</a>
 		{/if}
-		{#if themes}
+		{#if themes.length}
 			{#each themes as theme}
 				<ThemePreview {theme} />
 			{/each}
@@ -85,7 +108,7 @@
 		align-items: center;
 		place-content: center;
 		-webkit-background-clip: text, padding-box !important;
-        background-clip: text, padding-box !important;
+		background-clip: text, padding-box !important;
 		background: var(--efy_color), var(--efy_color_trans);
 		min-height: 215rem;
 	}

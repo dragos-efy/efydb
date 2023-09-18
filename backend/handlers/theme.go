@@ -18,10 +18,19 @@ import (
 func GetThemes(c *fiber.Ctx) error {
 	showUnapproved := c.Query("unapproved", "false") == "true"
 	username := c.Query("username", "")
+	sortOrder := c.Query("sort", "score")
+	page, err := util.ParseUintQuery(c, "page")
+	if err != nil {
+		page = 1
+	}
+	limit, err := util.ParseUintQuery(c, "limit")
+	if err != nil {
+		limit = 20
+	}
 
 	var themes []entities.Theme
 
-	query := config.Database
+	query := config.Database.Model(&themes)
 	if !showUnapproved {
 		query = query.Where("approved = ?", true)
 	}
@@ -30,11 +39,19 @@ func GetThemes(c *fiber.Ctx) error {
 		query = query.Where("username = ?", username)
 	}
 
-	query.Find(&themes)
+	if sortOrder == "score" {
+		query = query.Order("score desc")
+	}
+
+	if page != 1 {
+		offset := (int(page) - 1) * int(limit)
+		query = query.Offset(offset)
+	}
+
+	query.Limit(int(limit)).Find(&themes)
 
 	for index := range themes {
 		rewriteTheme(&themes[index], c)
-		loadScore(&themes[index])
 	}
 
 	return c.JSON(&themes)
@@ -47,9 +64,6 @@ func loadThemeById(id uint, c *fiber.Ctx) (entities.Theme, error) {
 	if theme.Title == "" {
 		return theme, errors.New("Theme not found!")
 	}
-
-	rewriteTheme(&theme, c)
-	loadScore(&theme)
 
 	if user, err := util.ValidateUser(c); err == nil {
 		loadVoteByUser(&theme, user)
@@ -67,6 +81,7 @@ func GetTheme(c *fiber.Ctx) error {
 	if err != nil {
 		return util.ErrorResponse(c, fiber.StatusBadRequest, err.Error())
 	}
+	rewriteTheme(&theme, c)
 
 	return c.JSON(theme)
 }
@@ -230,7 +245,7 @@ func DeleteTheme(c *fiber.Ctx) error {
 	}
 
 	deleteThemeFiles(theme)
-	config.Database.Delete(&theme)
+	config.Database.Where(&theme).Delete(&theme)
 
 	return util.OkResponse(c)
 }
@@ -264,6 +279,10 @@ func VoteTheme(c *fiber.Ctx) error {
 	}
 
 	theme, _ := loadThemeById(themeId, c)
+	theme.Score = getScore(theme)
+	config.Database.Model(&theme).Where("id = ?", theme.ID).Update("score", theme.Score)
+
+	rewriteTheme(&theme, c)
 	return c.JSON(theme)
 }
 
@@ -281,7 +300,7 @@ func rewriteUrl(baseUrl string, url string) string {
 	return baseUrl + url
 }
 
-func loadScore(theme *entities.Theme) {
+func getScore(theme entities.Theme) int {
 	var votes []entities.Vote
 	config.Database.Where(&entities.Vote{ThemeID: theme.ID}).Find(&votes)
 
@@ -289,7 +308,7 @@ func loadScore(theme *entities.Theme) {
 	for _, vote := range votes {
 		score += vote.Score
 	}
-	theme.Score = score
+	return score
 }
 
 func loadVoteByUser(theme *entities.Theme, user entities.User) {

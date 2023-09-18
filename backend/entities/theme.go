@@ -14,6 +14,6 @@ type Theme struct {
 	Uploaded    int64  `json:"uploaded"`
 	EfyVersion  uint   `json:"efy_version"`
 	Approved    bool   `json:"approved"`
-	Score       int    `json:"score" gorm:"-"`
+	Score       int    `json:"score"`
 	UserScore   int    `json:"user_score" gorm:"-"`
 }
