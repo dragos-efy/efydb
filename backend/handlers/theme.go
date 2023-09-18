@@ -251,6 +251,10 @@ func DeleteTheme(c *fiber.Ctx) error {
 	deleteThemeFiles(theme)
 	config.Database.Where(&theme).Delete(&theme)
 
+	// delete votes created for the theme, since they're stored independently from the theme as well
+	exampleVote := entities.Vote{ThemeID: theme.ID}
+	config.Database.Where(&exampleVote).Delete(&exampleVote)
+
 	return util.OkResponse(c)
 }
 
@@ -283,7 +287,14 @@ func VoteTheme(c *fiber.Ctx) error {
 	}
 
 	theme, _ := loadThemeById(themeId, c)
-	theme.Score = getScore(theme)
+
+	// reset the number of votes to 0 in case there's no vote yet, hence sum(score) would fail
+	theme.Score = 0
+
+	// collect the total number of votes
+	config.Database.Model(&entities.Vote{}).Select("sum(score)").Where(&entities.Vote{ThemeID: theme.ID}).Scan(&theme.Score)
+
+	// save the updated vote count to the database
 	config.Database.Model(&theme).Where("id = ?", theme.ID).Update("score", theme.Score)
 
 	rewriteTheme(&theme, c)
@@ -302,17 +313,6 @@ func rewriteUrl(baseUrl string, url string) string {
 		return url
 	}
 	return baseUrl + url
-}
-
-func getScore(theme entities.Theme) int {
-	var votes []entities.Vote
-	config.Database.Where(&entities.Vote{ThemeID: theme.ID}).Find(&votes)
-
-	score := 0
-	for _, vote := range votes {
-		score += vote.Score
-	}
-	return score
 }
 
 func loadVoteByUser(theme *entities.Theme, user entities.User) {
