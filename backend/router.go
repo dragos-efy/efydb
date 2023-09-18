@@ -50,6 +50,7 @@ func CreateRouter() {
 	themes.Patch("/edit", handlers.EditTheme)
 	themes.Delete("/delete", handlers.DeleteTheme)
 	themes.Post("/approve", handlers.ApproveTheme)
+	themes.Post("/:id/vote", handlers.VoteTheme)
 
 	fmt.Printf("Listening on http://localhost%s/", portStr)
 	log.Fatal(router.Listen(portStr))

@@ -1,6 +1,8 @@
 package handlers
 
 import (
+	"errors"
+	"math"
 	"strconv"
 	"strings"
 	"time"
@@ -32,9 +34,28 @@ func GetThemes(c *fiber.Ctx) error {
 
 	for index := range themes {
 		rewriteTheme(&themes[index], c)
+		loadScore(&themes[index])
 	}
 
 	return c.JSON(&themes)
+}
+
+func loadThemeById(id uint, c *fiber.Ctx) (entities.Theme, error) {
+	var theme entities.Theme
+	config.Database.Find(&theme, "id = ?", id)
+
+	if theme.Title == "" {
+		return theme, errors.New("Theme not found!")
+	}
+
+	rewriteTheme(&theme, c)
+	loadScore(&theme)
+
+	if user, err := util.ValidateUser(c); err == nil {
+		loadVoteByUser(&theme, user)
+	}
+
+	return theme, nil
 }
 
 func GetTheme(c *fiber.Ctx) error {
@@ -42,13 +63,11 @@ func GetTheme(c *fiber.Ctx) error {
 	if err != nil {
 		return util.ErrorResponse(c, fiber.StatusBadRequest, err.Error())
 	}
-
-	var theme entities.Theme
-	config.Database.Find(&theme, "id = ?", id)
-	if theme.Title == "" {
-		return util.ErrorResponse(c, fiber.StatusBadRequest, "Theme not found!")
+	theme, err := loadThemeById(id, c)
+	if err != nil {
+		return util.ErrorResponse(c, fiber.StatusBadRequest, err.Error())
 	}
-	rewriteTheme(&theme, c)
+
 	return c.JSON(theme)
 }
 
@@ -216,6 +235,38 @@ func DeleteTheme(c *fiber.Ctx) error {
 	return util.OkResponse(c)
 }
 
+func VoteTheme(c *fiber.Ctx) error {
+	user, err := util.ValidateUser(c)
+	if err != nil {
+		return nil
+	}
+
+	themeId, err := util.ParseUintParam(c, "id")
+	if err != nil {
+		return util.ErrorResponse(c, fiber.StatusBadRequest, "Theme not found!")
+	}
+
+	score, err := strconv.Atoi(c.Query("score"))
+	if err != nil || math.Abs(float64(score)) > 1 {
+		return util.ErrorResponse(c, fiber.StatusBadRequest, "Invalid score specified!")
+	}
+
+	// delete the old vote by this user if existent
+	config.Database.Where(&entities.Vote{ThemeID: themeId, UserID: user.ID}).Delete(&entities.Vote{})
+
+	if score != 0 {
+		vote := entities.Vote{
+			UserID:  user.ID,
+			ThemeID: themeId,
+			Score:   score,
+		}
+		config.Database.Create(&vote)
+	}
+
+	theme, _ := loadThemeById(themeId, c)
+	return c.JSON(theme)
+}
+
 func rewriteTheme(theme *entities.Theme, c *fiber.Ctx) {
 	baseUrl := c.BaseURL()
 	theme.Config = rewriteUrl(baseUrl, theme.Config)
@@ -228,4 +279,24 @@ func rewriteUrl(baseUrl string, url string) string {
 		return url
 	}
 	return baseUrl + url
+}
+
+func loadScore(theme *entities.Theme) {
+	var votes []entities.Vote
+	config.Database.Where(&entities.Vote{ThemeID: theme.ID}).Find(&votes)
+
+	score := 0
+	for _, vote := range votes {
+		score += vote.Score
+	}
+	theme.Score = score
+}
+
+func loadVoteByUser(theme *entities.Theme, user entities.User) {
+	vote := entities.Vote{
+		UserID:  user.ID,
+		ThemeID: theme.ID,
+	}
+	config.Database.Where(&vote).Find(&vote)
+	theme.UserScore = vote.Score
 }

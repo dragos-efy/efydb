@@ -2,13 +2,14 @@
 	import fetchJson from '$lib/fetchjs';
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
-	import { getRole, getUsername } from '$lib/token';
+	import { getRole, getToken, getUsername } from '$lib/token';
 	import { goto } from '$app/navigation';
 
 	let theme: any;
 	let showApproveBtn = false;
 	let showEditBtn = false;
 	let showDeleteBtn = false;
+	let showVoteBtn = false;
 
 	const getId = () => parseInt($page.url.searchParams.get('id')!);
 
@@ -17,11 +18,22 @@
 		let role = getRole();
 		let isAdmin = !isNaN(role) && role != 0;
 		let isCreator = getUsername() == theme.username;
+		let isLoggedIn = getToken() != null;
 
 		showApproveBtn = isAdmin && !theme.approved;
 		showEditBtn = isCreator;
 		showDeleteBtn = isAdmin || isCreator;
+		showVoteBtn = isLoggedIn;
 	});
+
+	const vote = async () => {
+		let newVote = theme.user_score == 1 ? 0 : 1;
+		let response = await fetchJson(`/themes/${getId()}/vote?score=${newVote}`, {
+			method: 'POST',
+		});
+		if (response.message) alert(response.message);
+		else theme = response;
+	}
 
 	const approve = async () => {
 		let response = await fetchJson(`/themes/approve?id=${getId()}`, {
@@ -91,7 +103,10 @@ const theme_config = async (a) => {
 					{#if theme.imageConfig}
 					<a href={theme.imageConfig} download="{theme.title}_efy_images.json" role="button">
 						<i efy_icon="arrow_down" />Images
-					</a	>
+					</a>
+					{/if}
+					{#if showVoteBtn}
+					<button on:click={vote}>{theme.score}<i efy_icon="arrow_down" style="rotate: 180deg;"></button>
 					{/if}
 					{#if showApproveBtn}
 					<button on:click={approve}><i efy_icon="check" />Approve</button>

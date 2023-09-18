@@ -28,7 +28,7 @@ func Connect() error {
 		panic(err)
 	}
 
-	Database.AutoMigrate(&entities.User{}, &entities.Theme{})
+	Database.AutoMigrate(&entities.User{}, &entities.Theme{}, &entities.Vote{})
 
 	return nil
 }

@@ -13,6 +13,7 @@ type Theme struct {
 	Screenshot  string `json:"screenshot"`
 	Uploaded    int64  `json:"uploaded"`
 	EfyVersion  uint   `json:"efy_version"`
-	Likes       uint   `json:"likes"`
 	Approved    bool   `json:"approved"`
+	Score       int    `json:"score" gorm:"-"`
+	UserScore   int    `json:"user_score" gorm:"-"`
 }
