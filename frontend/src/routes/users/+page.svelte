@@ -47,36 +47,28 @@
 </section>
 
 <style>
-	section {
-		justify-content: start;
-		gap: var(--efy_gap);
-	}
-	div {
-		display: flex;
-		align-items: center;
-		gap: var(--efy_gap0);
-		width: 100%;
-		padding: var(--efy_gap0);
-		border-radius: var(--efy_radius2);
-	}
-
-	div * {
+section {
+	justify-content: start;
+	gap: var(--efy_gap);
+}
+div {
+	display: flex;
+	align-items: center;
+	gap: var(--efy_gap0);
+	width: 100%;
+	padding: var(--efy_gap0);
+	border-radius: var(--efy_radius2);
+	& * {
 		height: min-content;
 		margin: 0;
 	}
-
-	p {
-		flex-grow: 1;
-		font-weight: bold;
-		padding-left: 5rem;
-		font-size: 20rem;
-	}
-
-	button {
-		white-space: nowrap;
-	}
-
-	input {
-		width: 70rem;
-	}
+}
+p {
+	flex-grow: 1;
+	font-weight: bold;
+	padding-left: 5rem;
+	font-size: 20rem;
+}
+button { white-space: nowrap }
+input { width: 70rem }
 </style>

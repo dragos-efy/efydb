@@ -45,20 +45,18 @@
 </section>
 
 <style>
-	section {
-		justify-content: start;
-		align-items: start;
-	}
-
-	#user-info {
-		margin: 50rem 5rem;
-	}
-
-	#themes-grid {
-		display: grid;
-		grid-template-columns: repeat(auto-fill, minmax(240rem, 1fr));
-		flex-wrap: wrap;
-		gap: var(--efy_gap);
-		width: 100%;
-	}
+section {
+	justify-content: start;
+	align-items: start;
+}
+#user-info {
+	margin: 50rem 5rem;
+}
+#themes-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(240rem, 1fr));
+	flex-wrap: wrap;
+	gap: var(--efy_gap);
+	width: 100%;
+}
 </style>

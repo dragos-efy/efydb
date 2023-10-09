@@ -55,27 +55,47 @@
 		else goto('/');
 	};
 
-const theme_config = async (a) => {
-	const b = await fetch(a),
-	c = await b.json(),
-	i = getId();
-	console.log(c);
+/*Get the current theme's Config*/
+let themeConfig = [];
+const theme_config = async (file)=>{
+	const result = await fetch(file);
+	themeConfig = await result.json();
 
-	document.querySelector(`style[efy_theme="${i}"]`).textContent = `html.efy_theme_preview {
-		--efy_color: ${c.gradient}!important;
-		--efy_color_trans: ${c.gradient_trans}!important;
-		--efy_color_text_var: hsl(${c.colorText})!important;
-		--efy_text: hsl(${c.text})!important;
-		--efy_radius: ${c.radius}!important; --efy_radius0: calc(${c.radius} / 1.25)!important; --efy_radius00: calc(${c.radius} / 3)!important;
-		--efy_border: ${c.border_size} solid hsla(var(--efy_bg_var) / var(--efy_border_alpha))!important;
+	document.querySelector(`style[efy_theme="${getId()}"]`).textContent = `html.efy_theme_preview {
+		--efy_color: ${themeConfig.gradient}!important;
+		--efy_color_trans: ${themeConfig.gradient_trans}!important;
+		--efy_color_text_var: hsl(${themeConfig.colorText})!important;
+		--efy_text: hsl(${themeConfig.text})!important;
+		--efy_radius: ${themeConfig.radius}!important;
+		--efy_radius0: calc(${themeConfig.radius} / 1.25)!important;
+		--efy_radius00: calc(${themeConfig.radius} / 3)!important;
+		--efy_border: ${themeConfig.border_size} solid hsla(var(--efy_bg_var) / var(--efy_border_alpha))!important;
 		--efy_bg_var: 0 0% 100%!important;
-		--efy_color_bgcol_var: 170 100% 10%; --efy_bg: hsl(var(--efy_color_bgcol_var))!important;
+		--efy_color_bgcol_var: 170 100% 10%;
+		--efy_bg: hsl(var(--efy_color_bgcol_var))!important;
 		--efy_bg1: hsla(var(--efy_bg_var) / .07)!important;
 	}`;
 	document.querySelector('.preview').addEventListener('click', ()=>{
 		document.querySelector('html').classList.toggle('efy_theme_preview')
 	})
 }
+
+// download File
+const downloadFile =(url, filename)=>{
+    fetch(url)
+        .then(response => response.blob())
+        .then(data => {
+            const blobURL = URL.createObjectURL(data);
+            const link = document.createElement('a');
+            link.href = blobURL;
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        })
+        .catch(error => console.error("Failed to download file:", error));
+}
+
 </script>
 
 <svelte:head>
@@ -84,29 +104,32 @@ const theme_config = async (a) => {
 
 <section>
 	{#if theme}
-		<div id="theme">
-			<img src={theme.screenshot} alt={theme.title} />
+		<div id="theme" class="efy_trans_filter efy_shadow_trans">
+			<img src={theme.screenshot} alt={theme.title} loading="lazy" />
 			<div class="info">
 				<span class="summary">
 					<h5>{theme.title}</h5>
 				</span>
 				<span class="actions">
-					<a class="username" href={`/user?username=${theme.username}`}>
+					<a class="username efy_trans_filter efy_shadow_trans" href={`/user?username=${theme.username}`}>
 						<i efy_icon="user" />{theme.username}
 					</a>
+					{#if themeConfig.version}
+					<a class="version efy_trans_filter efy_shadow_trans">{themeConfig.version}</a>
+					{/if}
+					{#if showVoteBtn}
+					<button on:click={vote}><i efy_icon="heart" />{theme.score}</button>
+					{/if}
 					<button class="preview">
 						<i efy_icon="play" />Preview
 					</button>
-					<a href={theme.config} download="{theme.title}_efy_config.json" role="button">
+					<button on:click={downloadFile(theme.config, `${theme.title}_efy_config.json`)}>
 						<i efy_icon="arrow_down" />Config
-					</a>
+					</button>
 					{#if theme.imageConfig}
-					<a href={theme.imageConfig} download="{theme.title}_efy_images.json" role="button">
-						<i efy_icon="arrow_down" />Images
-					</a>
-					{/if}
-					{#if showVoteBtn}
-					<button on:click={vote}>{theme.score}<i efy_icon="arrow_down" style="rotate: 180deg;"></button>
+					<button on:click={downloadFile(theme.config, `${theme.title}_efy_database.json`)}>
+						<i efy_icon="arrow_down" />Database
+					</button>
 					{/if}
 					{#if showApproveBtn}
 					<button on:click={approve}><i efy_icon="check" />Approve</button>
@@ -129,76 +152,63 @@ const theme_config = async (a) => {
 </section>
 
 <style>
-	#theme {
-		display: flex;
-		flex-direction: column;
-		width: fit-content;
-		justify-content: space-between;
-		padding: 0;
-		background: var(--efy_bg1);
-		border-radius: var(--efy_radius);
-		border: var(--efy_border);
-        width: 100%;
-        max-width: calc(var(--efy_100vh) * 0.7);
-	}
-
-	#theme img {
+#theme {
+	display: flex;
+	flex-direction: column;
+	width: fit-content;
+	justify-content: space-between;
+	padding: 0;
+	background: var(--efy_bg1);
+	border-radius: var(--efy_radius);
+	border: var(--efy_border);
+	width: 100%;
+	max-width: calc(var(--efy_100vh) * 0.7);
+	& img {
 		aspect-ratio: 16/9;
+		object-fit: contain;
 		border-radius: var(--efy_radius) var(--efy_radius) 0 0;
+		border-bottom: var(--efy_border);
 	}
-
-	#theme .actions {
+	& .actions {
 		display: flex;
 		flex-wrap: wrap;
 		gap: var(--efy_gap0);
 		padding: var(--efy_gap0);
 		border-top: var(--efy_border);
 		border-bottom: var(--efy_border);
+		& :is(a, button, i:not([efy_icon=check])) { margin: 0 }
 	}
-	#theme .actions :is(a, button, i:not([efy_icon=check])) {
-		margin: 0;
-	}
-
-	#theme .actions :is(a, button), #theme :is(.username, .preview) {
+	& .actions :is(a, button), & :is(.username, .version, .preview) {
 		display: flex;
 		align-items: center;
 	}
+	& :is(.description, .summary) { padding: 10rem }
+}
+#theme i:before {
+	position: relative;
+	margin: 0 8rem 0 0;
+	display: inline-block;
+	-webkit-background-clip: text !important;
+	background-clip: text !important;
+	background: var(--efy_color);
+	color: transparent;
+}
 
-	#theme :is(.description, .summary) {
-		padding: 10rem;
-	}
-
-	.info {
-		display: flex;
-		flex-direction: column;
-	}
-
-	.username {
-		background: var(--efy_bg1);
-		border-radius: var(--efy_radius);
-		border: var(--efy_border);
-		background-clip: none;
-		-webkit-background-clip: none;
-		-webkit-text-fill-color: var(--efy_text);
-		padding: var(--efy_padding);
-		gap: 8rem;
-	}
-
-	.preview {
-		gap: 8rem;
-	}
-
-	#theme [efy_icon='arrow_down']::before,
-	#theme [efy_icon='edit']::before,
-	#theme [efy_icon='remove']::before {
-		position: relative;
-		margin: 0 8rem 0 0;
-		display: inline-block;
-		-webkit-background-clip: text !important;
-		background-clip: text !important;
-		background: var(--efy_color);
-		color: transparent;
-	}
+.info {
+	display: flex;
+	flex-direction: column;
+}
+.username, .version {
+	background: var(--efy_bg1);
+	border-radius: var(--efy_radius);
+	border: var(--efy_border);
+	background-clip: none;
+	-webkit-background-clip: none;
+	-webkit-text-fill-color: var(--efy_text);
+	padding: var(--efy_padding);
+	gap: 8rem;
+}
+.preview { gap: 8rem }
 
 /*Theme Preview*/
 [efy_theme] { display: none!important;
@@ -211,29 +221,13 @@ const theme_config = async (a) => {
 	gap: var(--efy_gap0);
 	align-items: center;
 	padding: 10rem;
-}
-[efy_theme] > * {
-	pointer-events: none
-}
-[efy_theme] * {
-	backdrop-filter: none!important
-}
-[efy_theme] progress {
-	width: calc(100% - 26rem)
-}
-[efy_theme] :is(button, i, [efy_select] label) {
-	margin: 0
-}
-[efy_theme] mark {
-	line-height: 1.5
-}
-[efy_theme] :is(i, p) {
-	line-height: 1
-}
-[efy_theme] [efy_card] {
-	padding: 2rem 7rem; width: fit-content
-}
-[efy_theme] [efy_card].bg {
-	background: var(--efy_bg)
+	& > * { pointer-events: none }
+	& * { backdrop-filter: none!important }
+	& progress { width: calc(100% - 26rem) }
+	& :is(button, i, [efy_select] label) { margin: 0 }
+	& mark { line-height: 1.5 }
+	& :is(i, p) { line-height: 1 }
+	& [efy_card] { padding: 2rem 7rem; width: fit-content }
+	& [efy_card].bg { background: var(--efy_bg) }
 }
 </style>

@@ -85,26 +85,17 @@
 </section>
 
 <style>
-	h3 {
-		width: 100%;
-	}
-
-	#buttons {
-		display: flex;
-		width: 100%;
-		justify-content: space-between;
-	}
-
-	#files {
-		display: flex;
-	}
-
-	#files button {
+h3 { width: 100% }
+#buttons {
+	display: flex;
+	width: 100%;
+	justify-content: space-between;
+}
+#files { display: flex;
+	& button {
 		margin-right: 5rem;
 		cursor: pointer;
 	}
-
-	input[type='file'] {
-		display: none;
-	}
+}
+input[type='file'] { display: none }
 </style>

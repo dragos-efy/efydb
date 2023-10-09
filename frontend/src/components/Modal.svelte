@@ -48,7 +48,6 @@
 		justify-content: center;
 		align-items: center;
 	}
-
 	#dialog {
 		background: var(--efy_bg);
 		border-radius: var(--efy_radius);
@@ -58,7 +57,6 @@
 		flex-direction: column;
 		min-width: 25vw;
 	}
-
 	#buttons {
 		align-self: flex-end;
 		margin-top: 20rem;

@@ -8,7 +8,7 @@
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <div class="theme" efy_card on:click={onClick}>
-	<img src={theme.screenshot} alt={theme.name} />
+	<img src={theme.screenshot} alt={theme.name} loading="lazy" />
 	<span class="theme-info">
 		<p class="title">{theme.title}</p>
 		<p class="username">@{theme.username}</p>
@@ -24,6 +24,7 @@
 	}
 	.theme img {
 		aspect-ratio: 16 / 9;
+		object-fit: contain;
 		border-radius: var(--efy_radius) var(--efy_radius) 0 0;
 		border-bottom: var(--efy_border);
 	}

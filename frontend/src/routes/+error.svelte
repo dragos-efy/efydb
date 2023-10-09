@@ -8,19 +8,13 @@
 </section>
 
 <style>
-	section {
-		display: flex;
-		flex-direction: column;
-		justify-content: center;
-		align-items: center;
-		min-height: 70vh;
-	}
-
-	section h1 {
-		font-size: 120rem;
-	}
-
-	section p {
-		font-size: 35rem;
-	}
+section {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	min-height: 70vh;
+	& h1 { font-size: 120rem }
+	& p { font-size: 35rem }
+}
 </style>

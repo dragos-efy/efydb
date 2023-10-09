@@ -32,7 +32,7 @@
     {/if}
 </section>
 
-<script type="ts">
+<script lang="ts">
 	import fetchJson from "$lib/fetchjs";
 	import { getToken, logoutUser, setUserInfo } from "$lib/token";
 	import Modal from "../../components/Modal.svelte";
@@ -129,43 +129,35 @@
 </script>
 
 <style>
-    #user-actions {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-    }
-
-    #user-actions > div {
+#user-actions {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    & > div {
         margin-top: 30rem;
         display: flex;
         flex-wrap: wrap;
         gap: var(--efy_gap0);
     }
-
-    :is(.user-buttons, .sign-buttons) button {
-        margin: 0;
-    }
-
-    .sign-buttons {
-        display: flex;
-        gap: var(--efy_gap0);
-    }
-
-    #avatar {
-        padding: 20rem;
-        line-height: 1;
-        font-size: 80rem;
-        border-radius: calc(var(--efy_radius2) * 2);
-        border: 8rem solid var(--efy_text);
-        margin: 0 0 25rem 0;
-    }
-
-    #avatar:before {
-        color: var(--efy_text);
-    }
-
-    #signUp {
-        max-width: calc(var(--efy_100vh) * 0.7);
-    }
+}
+:is(.user-buttons, .sign-buttons) button {
+    margin: 0;
+}
+.sign-buttons {
+    display: flex;
+    gap: var(--efy_gap0);
+}
+#avatar {
+    padding: 20rem;
+    line-height: 1;
+    font-size: 80rem;
+    border-radius: calc(var(--efy_radius2) * 2);
+    border: 8rem solid var(--efy_text);
+    margin: 0 0 25rem 0;
+    &:before { color: var(--efy_text) }
+}
+#signUp {
+    max-width: calc(var(--efy_100vh) * 0.7);
+}
 </style>

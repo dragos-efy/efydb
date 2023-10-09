@@ -1,4 +1,4 @@
-<script type="ts">
+<script lang="ts">
 	// import { getRole } from "$lib/token";
 	import { onMount } from 'svelte';
 	import ThemePreview from '../components/ThemePreview.svelte';
@@ -50,6 +50,33 @@
 		fetchThemes();
 		initScrollListener();
 	});
+
+onMount(async () => {
+	let input = document.querySelector('header .search input'),
+	button = document.querySelector('header .search button'),
+	grid = document.querySelector('#themes-grid'),
+	links = document.querySelectorAll('header [href="/"]');
+
+	const update =(value = input.value)=>{
+		fetchJson(`/themes?q=${value}`, {}).then(function(result) {
+			document.querySelectorAll('#themes-grid > .theme')
+				.forEach(theme =>{ theme.remove() });
+			result.forEach(theme =>{
+				new ThemePreview({ target: grid, props: { theme }});
+			})
+		})
+	}
+
+	button.addEventListener('click', async ()=>{
+		update()
+	})
+	input.addEventListener('keyup', ({key})=>{
+		if (key === 'Enter'){ update()}
+	})
+	links.forEach(a =>{
+		a.addEventListener('click', ()=> update(''))
+	})
+});
 </script>
 
 <svelte:head>
@@ -80,6 +107,7 @@
 		{:else}
 			<div class="spin" />
 		{/if}
+
 	</span>
 </section>
 
@@ -88,11 +116,9 @@
 		align-self: flex-end;
 		margin: 0 0 15rem 0;
 	}
-
 	section {
 		justify-content: start;
 	}
-
 	#themes-grid {
 		display: grid;
 		grid-template-columns: repeat(auto-fill, minmax(240rem, 1fr));
@@ -100,7 +126,6 @@
 		gap: var(--efy_gap);
 		width: 100%;
 	}
-
 	.new-theme {
 		display: flex;
 		flex-direction: column;
@@ -111,19 +136,13 @@
 		background-clip: text, padding-box !important;
 		background: var(--efy_color), var(--efy_color_trans);
 		min-height: 215rem;
+		& i:before {
+			font-size: 40rem;
+			margin: 0;
+			-webkit-background-clip: text !important;
+			background-clip: text !important;
+			background: var(--efy_color);
+		}
 	}
-	.new-theme * {
-		margin: 0;
-	}
-	[efy_icon='plus']:before {
-		position: relative;
-		font-size: 40rem;
-		margin: 0;
-		transform: rotate(45deg);
-		display: inline-block;
-		-webkit-background-clip: text !important;
-		background-clip: text !important;
-		background: var(--efy_color);
-		color: transparent;
-	}
+	.new-theme * {margin: 0}
 </style>
