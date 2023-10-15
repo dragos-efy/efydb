@@ -136,9 +136,9 @@ func createFilesForTheme(c *fiber.Ctx) (entities.Theme, error) {
 		return theme, util.ErrorResponse(c, fiber.StatusInternalServerError, err.Error())
 	}
 
-	themeConf, err := c.FormFile("imageConfig")
+	themeConf, err := c.FormFile("database")
 	if err == nil {
-		theme.ImageConfig, err = util.SaveFile(c, themeConf)
+		theme.Database, err = util.SaveFile(c, themeConf)
 		if err != nil {
 			return theme, util.ErrorResponse(c, fiber.StatusInternalServerError, err.Error())
 		}
@@ -197,7 +197,7 @@ func EditTheme(c *fiber.Ctx) error {
 	theme.Title = newTheme.Title
 	theme.Description = newTheme.Description
 	theme.Config = newTheme.Config
-	theme.ImageConfig = newTheme.ImageConfig
+	theme.Database = newTheme.Database
 	theme.Screenshot = newTheme.Screenshot
 
 	config.Database.Where("id = ?", theme.ID).Updates(theme)
@@ -224,7 +224,7 @@ func ApproveTheme(c *fiber.Ctx) error {
 
 func deleteThemeFiles(theme entities.Theme) {
 	util.DeleteFile(theme.Config)
-	util.DeleteFile(theme.ImageConfig)
+	util.DeleteFile(theme.Database)
 	util.DeleteFile(theme.Screenshot)
 }
 
@@ -304,7 +304,7 @@ func VoteTheme(c *fiber.Ctx) error {
 func rewriteTheme(theme *entities.Theme, c *fiber.Ctx) {
 	baseUrl := c.BaseURL()
 	theme.Config = rewriteUrl(baseUrl, theme.Config)
-	theme.ImageConfig = rewriteUrl(baseUrl, theme.ImageConfig)
+	theme.Database = rewriteUrl(baseUrl, theme.Database)
 	theme.Screenshot = rewriteUrl(baseUrl, theme.Screenshot)
 }
 

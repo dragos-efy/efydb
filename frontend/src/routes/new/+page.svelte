@@ -9,7 +9,7 @@
 	let description: string;
 	let screenshot: any;
 	let config: any;
-	let imageConfig: any;
+	let database: any;
 
 	const loadTheme = async (id: string) => {
 		let theme = await fetchJson(`/themes/${id}`, {});
@@ -44,7 +44,7 @@
 		);
 		formData.append('screenshot', screenshot.files[0]);
 		formData.append('config', config.files[0]);
-		if (imageConfig.files.length > 0) formData.append('imageConfig', imageConfig.files[0]);
+		if (database.files.length > 0) formData.append('database', database.files[0]);
 
 		const response =
 			id == null
@@ -77,8 +77,8 @@
 			<button><label for="screenshot">Screenshot</label></button>
 			<input type="file" id="config" accept="application/json" bind:this={config} />
 			<button><label for="config">Config</label></button>
-			<input type="file" id="imageConfig" accept="application/json" bind:this={imageConfig} />
-			<button><label for="imageConfig">Image config</label></button>
+			<input type="file" id="database" accept="application/json" bind:this={database} />
+			<button><label for="database">Image config</label></button>
 		</div>
 		<button on:click={create}>Create</button>
 	</div>

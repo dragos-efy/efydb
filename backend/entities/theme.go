@@ -8,7 +8,7 @@ type Theme struct {
 	Description string `json:"description"`
 	Username    string `json:"username"`
 	Config      string `json:"config"`
-	ImageConfig string `json:"imageConfig"`
+	Database    string `json:"database"`
 	Screenshot  string `json:"screenshot"`
 	Uploaded    int64  `json:"uploaded"`
 	Approved    bool   `json:"approved"`

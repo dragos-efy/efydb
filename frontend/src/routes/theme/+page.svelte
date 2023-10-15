@@ -126,7 +126,7 @@ const downloadFile =(url, filename)=>{
 					<button on:click={downloadFile(theme.config, `${theme.title}_efy_config.json`)}>
 						<i efy_icon="arrow_down" />Config
 					</button>
-					{#if theme.imageConfig}
+					{#if theme.database}
 					<button on:click={downloadFile(theme.config, `${theme.title}_efy_database.json`)}>
 						<i efy_icon="arrow_down" />Database
 					</button>
