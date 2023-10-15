@@ -15,6 +15,10 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
+const screenshotSizeLimit = 512 * 1024     // 512 KB
+const configSizeLimit = 1024 * 1024        // 1 MB
+const databaseSizeLimit = 50 * 1024 * 1024 // 50 MB
+
 func GetThemes(c *fiber.Ctx) error {
 	showUnapproved := c.Query("unapproved", "false") == "true"
 	username := c.Query("username", "")
@@ -98,14 +102,14 @@ func createFilesForTheme(c *fiber.Ctx) (entities.Theme, error) {
 	// get the uploaded screenshot
 	ss, err := c.FormFile("screenshot")
 
-	if err != nil {
-		return theme, util.ErrorResponse(c, fiber.StatusBadRequest, "Screenshot missing!")
+	if err != nil || ss.Size > screenshotSizeLimit {
+		return theme, util.ErrorResponse(c, fiber.StatusBadRequest, "Screenshot missing or too large!")
 	}
 
 	conf, err := c.FormFile("config")
 
-	if err != nil {
-		return theme, util.ErrorResponse(c, fiber.StatusBadRequest, "No config provided!")
+	if err != nil || conf.Size > configSizeLimit {
+		return theme, util.ErrorResponse(c, fiber.StatusBadRequest, "Config missing or too large!")
 	}
 
 	data := c.FormValue("data", "")
@@ -137,7 +141,7 @@ func createFilesForTheme(c *fiber.Ctx) (entities.Theme, error) {
 	}
 
 	themeConf, err := c.FormFile("database")
-	if err == nil {
+	if err == nil && themeConf.Size <= databaseSizeLimit {
 		theme.Database, err = util.SaveFile(c, themeConf)
 		if err != nil {
 			return theme, util.ErrorResponse(c, fiber.StatusInternalServerError, err.Error())

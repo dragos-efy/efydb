@@ -4,6 +4,10 @@
 	import fetchJson, { fetchFormJson } from '$lib/fetchjs';
 	import { onMount } from 'svelte';
 
+	const SCREENSHOT_SIZE_LIMIT = 512 * 1024;
+	const CONFIG_SIZE_LIMIT = 1024 * 1024;
+	const DATABASE_SIZE_LIMIT = 50 * 1024 * 1024;
+
 	let id: string | null;
 	let title: string;
 	let description: string;
@@ -28,9 +32,22 @@
 		}
 	});
 
+	const exceedsLimit = (fileInput: HTMLInputElement, limit: number, name: string) => {
+		if (!fileInput.files?.length) return false;
+		if (fileInput.files[0].size > limit) {
+			alert(`${name} is too large. Max size: ${limit / 1024 / 1024}KB`);
+			return true;
+		}
+		return false;
+	}
+
 	const create = async () => {
 		if (!title || !description || !screenshot.files[0] || !config.files[0]) {
 			alert('Please provide all the info!');
+			return;
+		}
+
+		if (exceedsLimit(screenshot, SCREENSHOT_SIZE_LIMIT, "Screenshot") || exceedsLimit(config, CONFIG_SIZE_LIMIT, "Config") || exceedsLimit(database, DATABASE_SIZE_LIMIT, "Database")) {
 			return;
 		}
 
@@ -78,7 +95,7 @@
 			<input type="file" id="config" accept="application/json" bind:this={config} />
 			<button><label for="config">Config</label></button>
 			<input type="file" id="database" accept="application/json" bind:this={database} />
-			<button><label for="database">Image config</label></button>
+			<button><label for="database">Database</label></button>
 		</div>
 		<button on:click={create}>Create</button>
 	</div>
