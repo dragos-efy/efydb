@@ -5,6 +5,9 @@ FROM golang:alpine AS builder
 # Git is required for fetching the dependencies.
 RUN apk update && apk add --no-cache git && apk add --no-cach bash && apk add build-base
 
+# Vips is required for minifying images and creating thumbs for faster loading
+RUN apk add vips
+
 # Setup folders
 RUN mkdir /app
 WORKDIR /app
