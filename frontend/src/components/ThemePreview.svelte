@@ -8,7 +8,7 @@
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <div class="theme" efy_card on:click={onClick}>
-	<img src={theme.screenshot} alt={theme.name} loading="lazy" />
+	<img src={theme.screenshot.replace("/files", "/thumb")} alt={theme.name} loading="lazy" />
 	<span class="theme-info">
 		<p class="title">{theme.title}</p>
 		<p class="username">@{theme.username}</p>

@@ -32,6 +32,7 @@ func CreateRouter() {
 	})
 
 	router.Static("/files", fmt.Sprintf("%s/files/", config.RootDir()))
+	router.Get("/thumb/:filename", handlers.GetImageThumb)
 
 	user := router.Group("/users")
 	user.Get("/", handlers.GetUsers)
