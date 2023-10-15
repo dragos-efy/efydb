@@ -2,6 +2,8 @@ services:
   backend:
     build: backend/.
     restart: on-failure
+    ports:
+      - 8080:8080
     volumes:
       - efydb:/root/efydb
   frontend:
@@ -9,6 +11,8 @@ services:
       context: frontend/.
       args:
         - PUBLIC_API_URL=https://dbapi.efy.ooo
+    ports:
+      - 3000:3000
 
 volumes:
   efydb:

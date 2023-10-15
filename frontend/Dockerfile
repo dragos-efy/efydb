@@ -1,5 +1,8 @@
 FROM node:lts-alpine AS build
 
+ARG PUBLIC_API_URL
+ENV PUBLIC_API_URL $PUBLIC_API_URL
+
 WORKDIR /app
 
 COPY package.json yarn.lock ./

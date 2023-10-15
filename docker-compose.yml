@@ -1,13 +1,16 @@
 services:
   backend:
     build: backend/.
+    restart: on-failure
     ports:
       - 8080:8080
-    restart: on-failure
     volumes:
       - efydb:/root/efydb
   frontend:
-    build: frontend/.
+    build: 
+      context: frontend/.
+      args:
+        - PUBLIC_API_URL=http://localhost:8080
     ports:
       - 3000:3000
 
